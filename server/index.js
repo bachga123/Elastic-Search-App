@@ -168,15 +168,36 @@ app.post("/data/:index", async (req, res) => {
         break;
 
       default:
-        response = await axios.get(`${esUrl}${req.params.index}/_search?size=10000`);
+        response = await axios.get(`${esUrl}${req.params.index}/_search?scroll=1m`); // dữ liệu trả về tổng số bản ghi và chỉ 20 bản ghi đầu tiên
         break;
     }
 
-    res.json(response.data.hits.hits);
+    res.json(response.data.hits); // data trả về sẽ khác, thay đổi lại bên FE
   } catch (error) {
     res.json(error);
   }
 });
+
+/*  search multi field, mặc định là all field  dữ liệu req.body dạng {
+    "query":"USA",
+    "fields":["NOC","Name","Sex"]
+} muốn thêm bớt tuỳ do FE 
+Cái size tạm thời để cứng, sau này phát triển người dùng chọn size mình có thể thay đổi*/
+app.post("/search/:index",async (req,res)=>{
+  try {
+    console.log(req.body)
+    let response=await axios.post(`${esUrl}${req.params.index}/_search?scroll=1m`,{
+      size: 30, 
+      query:{
+        multi_match:req.body
+      },
+    })
+    res.json(response.data.hits)
+  } catch (error) {
+    res.json(error)
+  }
+})
+// delete 1 bản ghi trong index theo id
 app.delete("/data/:index/:id", async (req, res) => {
   try {
     const response = await axios.delete(
@@ -187,6 +208,22 @@ app.delete("/data/:index/:id", async (req, res) => {
     res.json(error);
   }
 });
+/* delete multi bản ghi theo id, data req.body mẫu {
+    "ids" : {"values" : ["243" ,"244", "245"]}
+} truyền đúng nha, chứ sai nó lỗi, nhớ render dựa theo cái respone.data thông báo là có mấy bản ghi đc xoá á*/
+app.post("/data/:index/ids", async (req, res) => {
+  try {
+    const response = await axios.post(
+      `${esUrl}${req.params.index}/_delete_by_query`,{
+        query:req.body
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//delete index
 app.delete("/:index", async (req, res) => {
   try {
     const response = await client.indices.delete({ index: req.params.index })
@@ -195,6 +232,8 @@ app.delete("/:index", async (req, res) => {
     res.json(error);
   }
 });
+
+/// get all index nhưng chỉ lấy tên, Bách đã thay thế
 app.get("/indexs", async (req, res) => {
   try {
     const response = await axios.get(
