@@ -28,6 +28,7 @@ export const CreateIndexPage = (props) => {
         const form = new FormData();
         form.append("indexname", indexName);
         form.append("dataindex", fileData);
+        console.log(fileData)
         try {
           let response = await axios.post("/data", form);
           console.log(response)
@@ -58,7 +59,7 @@ export const CreateIndexPage = (props) => {
                 placeholder="Name"
                 required
                 onChange={(e) => {
-                  setIndexName(e.target.value);
+                  setIndexName(e.target.file[0]);
                 }}
               />
               <br />
@@ -69,7 +70,7 @@ export const CreateIndexPage = (props) => {
                 onChange={handleUploadFile}
               />
               <br />
-              <Button onClick={handleCreateIndex}>Tao index</Button>
+              <Button onClick={handleCreateIndex}>Create Index</Button>
             </div>
           </div>
         </div>

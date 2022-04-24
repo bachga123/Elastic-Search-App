@@ -21,40 +21,53 @@ export const EditIndexPage = (props) => {
     let response = await axios.post(`/data/${indexId}`);
     setData(response.data);
   }
-  // async function getDataTable() {
-  //   const columnTable =
-  //   {
-  //     label: 'Id',
-  //     field: 'Id',
-  //     width: 100,
-  //     attributes: {
-  //       'aria-controls': 'DataTable',
-  //       'aria-label': 'Name',
-  //     },
-  //   };
-  //   const test = {
-  //     label: 'Nam',
-  //     field: 'Name',
-  //     width: 100,
-  //     attributes: {
-  //       'aria-controls': 'DataTable',
-  //       'aria-label': 'Name',
-  //     },
-  //   }
-  //   columnTable = columnTable.add(test)
-  //   const rowTable =
-  //   {
-  //     Id: 'Tiger Nixon',
-  //   };
-  //   const dataTable = {
-  //     columns: [columnTable],
-  //     rows: [rowTable]
-  //   }
-  //   setDataTable(dataTable);
-  // }
+  async function getDataTable() {
+    let response = await axios.post(`/data/${indexId}`);
+    const data = response.data;
+    const columnTable = [
+      {
+        label: 'Id',
+        field: 'Id',
+        width: 100,
+        attributes: {
+          'aria-controls': 'DataTable',
+          'aria-label': 'Name',
+        }
+      },
+    ];
+    data.hits[0] && Object.keys(data.hits[0]._source).map((value) => {
+      const temp = {
+        label: value,
+        field: value,
+        width: 100,
+        attributes: {
+          'aria-controls': 'DataTable',
+          'aria-label': value,
+        }
+      }
+      columnTable.push(temp)
+    })
+
+
+    const rowTable = [
+      { Id: 'Tiger Nixon', }
+    ];
+    {
+      data.hits && data.hits.map(value => {
+        const obj = Object.entries(value._source)
+        const objtemp = Object.fromEntries(obj)
+        rowTable.push(objtemp);
+      })
+    }
+    const dataTable = {
+      columns: columnTable,
+      rows: rowTable
+    }
+    setDataTable(dataTable);
+  }
   useEffect(() => {
     getData();
-    // getDataTable();
+    getDataTable();
   }, []);
   const handleOnChangeOption = (e) => {
     if (e.target.value) {
@@ -144,45 +157,62 @@ export const EditIndexPage = (props) => {
               </div>
               {/* co length moi render */}
               {data.hits !== undefined ? (<h4>Tổng cộng có {data.hits.length} bản ghi</h4>) : null}
-              <CDBTable responsive>
-                <CDBTableHeader color="dark">
-                  {data.hits !== undefined ? (
-                    <tr>
-                      <th>Id</th>
-                      {Object.keys(data.hits[0]._source).map((value) => (
-                        <th>{value}</th>
-                      ))}
-                      <th>Action</th>
-                    </tr>
-
-                  ) : null}
-                </CDBTableHeader>
-                <CDBTableBody>
-                  <tr>
-                    <td>00</td>
-                    <td>
-                      <a href={`/index/School`}>Example Index</a>
-                    </td>
-                    <td key="school">School</td>
-                    <td>#</td>
-                    <td>#</td>
-                  </tr>
-                  {data.hits !== undefined ? (
-                    data.hits.map((value) =>
+              <div className="row">
+                <div className="col-sm">
+                  {/* <CDBTable responsive className={{ display: "80%" }}>
+                    <CDBTableHeader color="dark">
+                      {data.hits !== undefined ? (
+                        <tr>
+                          <th>Id</th>
+                          {Object.keys(data.hits[0]._source).map((value) => (
+                            <th>{value}</th>
+                          ))}
+                          <th>Action</th>
+                        </tr>
+                      ) : null}
+                    </CDBTableHeader>
+                    <CDBTableBody>
                       <tr>
-                        <td>{value._id}</td>
-                        {Object.values(value._source).map(dat =>
-                          <td>{dat}</td>
-                        )}
+                        <td>00</td>
                         <td>
-                          <button className="btn btn-outline-primary" >Edit</button>
-                          <button className="btn btn-outline-danger" style={{ margin: "4px" }}>Remove</button>
+                          <a href={`/index/School`}>Example Index</a>
                         </td>
+                        <td key="school">School</td>
+                        <td>#</td>
+                        <td>#</td>
                       </tr>
-                    )
-                  ) : null}
-                </CDBTableBody>
-              </CDBTable>
+                      {data.hits !== undefined ? (
+                        data.hits.map((value) =>
+                          <tr>
+                            <td>{value._id}</td>
+                            {Object.values(value._source).map(dat =>
+                              <td>{dat}</td>
+                            )}
+                            <td>
+                              <button className="btn btn-outline-primary" >Edit</button>
+                              <button className="btn btn-outline-danger" style={{ margin: "4px" }}>Remove</button>
+                            </td>
+                          </tr>
+                        )
+                      ) : null}
+                    </CDBTableBody>
+                  </CDBTable> */}
+                  <CDBCard>
+                    <CDBCardBody>
+                      <CDBDataTable striped
+                        bordered
+                        hover
+                        entriesOptions={[5, 20, 25]}
+                        entries={5}
+                        pagesAmount={4}
+                        data={dataTable}
+                        materialSearch={true} />
+                    </CDBCardBody>
+
+                  </CDBCard>
+                </div>
+
+              </div>
             </div>
           </div>
         </div>

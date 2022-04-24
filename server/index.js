@@ -106,7 +106,6 @@ app.post("/data", upload.single('dataindex'), async (req, res) => {
     const { filename } = req.file
     console.log(req.file)
     const sampleData = require(`./uploads/${filename}`);
-
     let data = ""
     for (let idx = 0; idx < sampleData.length; idx++) {
       data = data + `{"index":{"_index":"${req.body.indexname}","_id" : "${idx + 1}"}}` + "\n"

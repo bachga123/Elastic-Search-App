@@ -7,15 +7,35 @@ import { Table } from "react-bootstrap";
 import { CDBBtn, CDBLink, CDBNavLink, CDBTable, CDBTableBody, CDBTableHeader } from "cdbreact";
 import { Link } from "react-router-dom";
 import { CDBBreadcrumb } from "cdbreact";
+
 export const IndexPage = (props) => {
   const [indexs, setIndexs] = useState([]);
+  const [nameDeleteIndex, setNameDeleteIndex] = useState("");
   useEffect(() => {
-    async function getIndex() {
-      let response = await axios.get("/indexs");
-      setIndexs(response.data);
-    }
     getIndex();
   }, []);
+  async function getIndex() {
+    let response = await axios.get("/indexs");
+    setIndexs(response.data);
+  }
+  const handleDeleteIndex = (e) => {
+    setNameDeleteIndex(e.target.value)
+    if (nameDeleteIndex === "") {
+      e.preventDefault();
+    } else {
+      async function DeleteIndex() {
+        let response = await axios.delete(`/${nameDeleteIndex}`);
+        console.log(response)
+        if (response.status === 200) {
+          alert("xoá thành công");
+          setNameDeleteIndex('');
+          getIndex();
+        }
+      }
+      DeleteIndex();
+    }
+  };
+
   return (
     <Layout>
       <div style={{ flex: "1 1 auto", display: "flex", flexFlow: "column", height: "100vh", overflowY: "hidden" }}>
@@ -51,7 +71,7 @@ export const IndexPage = (props) => {
                     <td>#</td>
                     <td>#</td>
                   </tr>
-                  {indexs.map(({ id, index, status, docs_count, store_size }) => (
+                  {indexs && indexs.map(({ id, index, status, docs_count, store_size }) => (
                     <tr>
                       <td key={id}>{id}</td>
                       <td>
@@ -60,16 +80,22 @@ export const IndexPage = (props) => {
                       <td>{status}</td>
                       <td>{docs_count}</td>
                       <td>{store_size}</td>
-                      <td></td>
+                      <td>
+                        <Button className="btn-danger"
+                          onClick={e => { handleDeleteIndex(e) }}
+
+                          value={index}>Remove</Button>
+                      </td>
                     </tr>
                   ))}
                 </CDBTableBody>
               </CDBTable>
-
             </div>
           </div>
         </div>
       </div>
+      <form name="deleteIndexForm" class="mt-4" method="POST">
+      </form>
     </Layout >
   );
 };
