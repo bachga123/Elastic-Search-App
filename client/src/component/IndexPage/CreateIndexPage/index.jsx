@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import Layout from "../../../container/Layout";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "../../../helper/axios";
-import { Button, NavItem } from "react-bootstrap";
-import "./style.css";
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-
+import { useNavigate } from "react-router-dom";
+import Layout from "../../../container/Layout";
+import axios from "../../../helper/axios";
+import FileItem from "./component/FileItem";
+import "./style.css";
 export const CreateIndexPage = (props) => {
   const navigate = useNavigate();
   const [fileData, setFileData] = useState("");
@@ -30,9 +29,9 @@ export const CreateIndexPage = (props) => {
         form.append("dataindex", fileData);
         try {
           let response = await axios.post("/data", form);
-          console.log(response)
+          console.log(response);
           if (response.status === 200) {
-            navigate('/indexs');
+            navigate("/indexs");
           }
         } catch (err) {
           console.log(err);
@@ -44,7 +43,27 @@ export const CreateIndexPage = (props) => {
   return (
     <Layout>
       <div className="container_index">
-        <h4 className="header_indexs">Tao Index</h4>
+        <h4 className="header_indexs">Tạo Index</h4>
+
+        {/* <Form.Control
+          size="sm"
+          type="file"
+          placeholder="Small text"
+          onChange={handleUploadFile}
+          className="form-input"
+        /> */}
+
+        <label for="file-upload" className="custom-file-upload">
+          <i className="bi bi-file-earmark-diff icon-file-plus"></i>
+          <p>JSON File</p>
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          onChange={handleUploadFile}
+          style={{ width: "80px" }}
+        />
+
         <Form.Control
           type="text"
           placeholder="Ten index"
@@ -52,15 +71,14 @@ export const CreateIndexPage = (props) => {
           onChange={(e) => {
             setIndexName(e.target.value);
           }}
+          className="form-input"
         />
-        <br />
-        <Form.Control
-          size="sm"
-          type="file"
-          placeholder="Small text"
-          onChange={handleUploadFile}
-        />
-        <Button onClick={handleCreateIndex}>Tao index</Button>
+        
+        <FileItem name={fileData.name} />
+
+        <Button onClick={handleCreateIndex} className="bt-submit">
+          Tạo
+        </Button>
       </div>
     </Layout>
   );

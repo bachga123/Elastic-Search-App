@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Layout from "../../../container/Layout";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "../../../helper/axios";
-import { Button, NavItem } from "react-bootstrap";
-import "./style.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { Alert } from "bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
+import Layout from "../../../container/Layout";
+import axios from "../../../helper/axios";
+import "./style.css";
 export const EditIndexPage = (props) => {
   const navigate = useNavigate();
   const params = useParams();
@@ -14,51 +12,51 @@ export const EditIndexPage = (props) => {
   const { indexId } = params;
   const [textSearchRecord, setTextSearchRecord] = useState("");
   const [idDeleteRecord, setIdDeleteRecord] = useState("");
-  const [searchby,setSearchBy]=useState("")
+  const [searchby, setSearchBy] = useState("");
   async function getData() {
     let response = await axios.post(`/data/${indexId}`);
     setData(response.data);
   }
   useEffect(() => {
-    
     getData();
   }, []);
-  const handleOnChangeOption=(e)=>{
-    if(e.target.value){
-      setSearchBy(e.target.value)
+  const handleOnChangeOption = (e) => {
+    if (e.target.value) {
+      setSearchBy(e.target.value);
     }
-  }
+  };
   const handleSearchRecord = (e) => {
     if (textSearchRecord === "") {
       e.preventDefault();
-    }
-    else{
+    } else {
       async function SearchRecord() {
-        let response = await axios.post(`/data/${indexId}`,{type:"multi-matching",operator:"or",[searchby]:textSearchRecord});
-        
-        if(response.status===200)
-        {
-          setData(response.data)   
+        let response = await axios.post(`/data/${indexId}`, {
+          type: "multi-matching",
+          operator: "or",
+          [searchby]: textSearchRecord,
+        });
+
+        if (response.status === 200) {
+          setData(response.data);
         }
       }
-      SearchRecord()
+      SearchRecord();
     }
   };
   const handleDeleteRecord = (e) => {
     if (idDeleteRecord === "") {
       e.preventDefault();
-    }else{
-        async function DeleteRecord() {
-            let response = await axios.delete(`/data/${indexId}/${idDeleteRecord}`);
-            console.log(response)
-            if(response.status===200)
-            {
-                alert("xoá thành công")
-                setIdDeleteRecord('')
-                getData()
-            }
-          }
-          DeleteRecord()
+    } else {
+      async function DeleteRecord() {
+        let response = await axios.delete(`/data/${indexId}/${idDeleteRecord}`);
+        console.log(response);
+        if (response.status === 200) {
+          alert("xoá thành công");
+          setIdDeleteRecord("");
+          getData();
+        }
+      }
+      DeleteRecord();
     }
   };
   return (
@@ -75,9 +73,19 @@ export const EditIndexPage = (props) => {
                 required
                 style={{ width: "40%", height: "40px" }}
               />
-              <Form.Select aria-label="Default select example" style={{height:'40px',marginLeft:'10px',width:'170px'}} onChange={handleOnChangeOption}>
+              <Form.Select
+                aria-label="Default select example"
+                style={{ height: "40px", marginLeft: "10px", width: "170px" }}
+                onChange={handleOnChangeOption}
+              >
                 <option>Tìm theo</option>
-                {data[1]?Object.keys(data[1]._source).map(key=><option key={key} value={key}>{key}</option>):null}
+                {data[1]
+                  ? Object.keys(data[1]._source).map((key) => (
+                      <option key={key} value={key}>
+                        {key}
+                      </option>
+                    ))
+                  : null}
               </Form.Select>
 
               <Button className="button_index" onClick={handleSearchRecord}>
@@ -96,7 +104,10 @@ export const EditIndexPage = (props) => {
                 />
                 <br />
               </>
-              <Button className="button_index" onClick={handleDeleteRecord}> Xoá bản ghi</Button>
+              <Button className="button_index" onClick={handleDeleteRecord}>
+                {" "}
+                Xoá bản ghi
+              </Button>
             </div>
           </div>
           <div className="container_data_index">
