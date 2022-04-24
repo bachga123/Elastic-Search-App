@@ -17,7 +17,7 @@ function App() {
         <Routes>
           <Route path="/" exact element={<HomePage />} />
           <Route path="/indexs" exact element={<IndexPage />} />
-          <Route path="/createindex" exact element={<CreateIndexPage />} />
+          <Route path="/create-index" exact element={<CreateIndexPage />} />
           <Route path="/index/:indexId" exact element={<EditIndexPage />} />
         </Routes>
       </Router>
