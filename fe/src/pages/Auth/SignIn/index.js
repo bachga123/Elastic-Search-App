@@ -1,31 +1,59 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Button } from "react-bootstrap";
-import { CDBInput, CDBContainer } from "cdbreact";
+
 import "./style.css";
+
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import { Link } from "react-router-dom";
 
 SignIn.propTypes = {};
 
 function SignIn(props) {
+  const onChangeLoginForm = () => {};
+
+  const handleSubmit = () => {};
+
   return (
-    <div className="form-login">
-      <h4 className="header_indexs">Sign in</h4>
-      <CDBContainer>
-        <CDBInput
-          className="form-input"
-          placeholder="Username"
-          icon={<i className="fa fa-profile text-dark"></i>}
-        />
-        <CDBInput
-          className="form-input"
-          c
-          placeholder="email"
-          type="email"
-          icon={<i className="fa fa-email text-dark"></i>}
-        />
-      </CDBContainer>
-      <Button className="bt-submit">Sign in</Button>
-    </div>
+    <>
+      <div className="form-auth">
+        <h1 className="form-title">Sign in</h1>
+        <Form className="my-4" onSubmit={handleSubmit}>
+          <Form.Group>
+            <Form.Control
+              type="text"
+              className="text-input"
+              placeholder="Email"
+              name="email"
+              required
+              onChange={onChangeLoginForm}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Control
+              type="password"
+              className="text-input"
+              placeholder="Password"
+              name="password"
+              required
+              onChange={onChangeLoginForm}
+            />
+          </Form.Group>
+
+          <Button className="btsubmit " variant="info" type="submit">
+            Login
+          </Button>
+        </Form>
+        <p className="p-signup">
+          Don't have an account?
+          <Link to="/sign-up">
+            <Button variant="success" size="sm" className="ml-2">
+              Sign-up
+            </Button>
+          </Link>
+        </p>
+      </div>
+    </>
   );
 }
 

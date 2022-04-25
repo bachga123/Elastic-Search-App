@@ -1,10 +1,38 @@
-.form-login{
-    margin: auto;
-    margin-top: 100px;
+.form-auth{
     background-color: #FFF;
-    height: 600px;
-    width: 500px;
+    height: auto;
+    width: 400px;
+    border: 1px solid #FFF;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     border-radius: 50px;
-    position: relative;
+    margin: 100px auto;
   }
+
+.form-title{
+  font: 40px Arial;
+  width: 140px;
+  margin: 20px auto 50px;
+  
+}
+
+
+.text-input{
+  width: 350px;
+  height: 50px;
+  margin: 40px auto;
+}
+
+.btsubmit{
+
+  border-radius: 30px;
+  margin: 10px auto;
+  width: 200px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.p-signup{
+  margin: 10px auto;
+  width: 300px;
+}

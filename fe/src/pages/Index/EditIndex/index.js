@@ -1,15 +1,21 @@
-import {
-  CDBBreadcrumb,
-  CDBTable,
-  CDBTableBody,
-  CDBTableHeader,
-} from "cdbreact";
 import React, { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
-import Form from "react-bootstrap/Form";
-import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../../helper/axios";
+import { Button, NavItem } from "react-bootstrap";
 import "./style.css";
+import { useNavigate, useParams } from "react-router-dom";
+import Form from "react-bootstrap/Form";
+import {
+  CDBTableHeader,
+  CDBTableBody,
+  CDBTable,
+  CDBBtn,
+  CDBContainer,
+  CDBCard,
+  CDBCardBody,
+  CDBDataTable,
+} from "cdbreact";
+import { CDBBreadcrumb } from "cdbreact";
+
 const EditIndexPage = (props) => {
   const navigate = useNavigate();
   const params = useParams();
@@ -59,45 +65,47 @@ const EditIndexPage = (props) => {
       getData();
     }
   }
+  async function getDataTable() {
+    let response = await axios.post(`/data/${indexId}`, { size: 10000 });
+    const data = response.data.hits;
+    console.log(response.data);
+    const columnTable = [];
+    data.hits[0] &&
+      Object.keys(data.hits[0]._source).map((value) => {
+        const temp = {
+          label: value,
+          field: value,
+          width: 100,
+          attributes: {
+            "aria-controls": "DataTable",
+            "aria-label": value,
+          },
+        };
+        columnTable.push(temp);
+      });
 
-  // async function getDataTable() {
-  //   const columnTable =
-  //   {
-  //     label: 'Id',
-  //     field: 'Id',
-  //     width: 100,
-  //     attributes: {
-  //       'aria-controls': 'DataTable',
-  //       'aria-label': 'Name',
-  //     },
-  //   };
-  //   const test = {
-  //     label: 'Nam',
-  //     field: 'Name',
-  //     width: 100,
-  //     attributes: {
-  //       'aria-controls': 'DataTable',
-  //       'aria-label': 'Name',
-  //     },
-  //   }
-  //   columnTable = columnTable.add(test)
-  //   const rowTable =
-  //   {
-  //     Id: 'Tiger Nixon',
-  //   };
-  //   const dataTable = {
-  //     columns: [columnTable],
-  //     rows: [rowTable]
-  //   }
-  //   setDataTable(dataTable);
-  // }
+    const rowTable = [];
+
+    data.hits[0] &&
+      data.hits.map((value) => {
+        const obj = Object.entries(value._source);
+        const objtemp = Object.fromEntries(obj);
+        rowTable.push(objtemp);
+      });
+
+    const dataTable = {
+      columns: columnTable,
+      rows: rowTable,
+    };
+    setDataTable(dataTable);
+  }
   useEffect(() => {
     if (search === false) {
       getData();
     } else {
       SearchRecord();
     }
-    // getDataTable();
+    getDataTable();
   }, [size]);
   const handleOnChangeOption = (e) => {
     if (e.target.value) {
@@ -142,6 +150,15 @@ const EditIndexPage = (props) => {
   };
   return (
     <>
+      <CDBBreadcrumb>
+        <a className="breadcrumb-item" href="/">
+          Home
+        </a>
+        <a className="breadcrumb-item" href="/indexs">
+          Index List
+        </a>
+        <li className="breadcrumb-item active">Edit Index</li>
+      </CDBBreadcrumb>
       <div
         style={{
           flex: "1 1 auto",
@@ -167,15 +184,6 @@ const EditIndexPage = (props) => {
               }}
             >
               <div style={{ display: "auto" }}>
-                <CDBBreadcrumb>
-                  <a className="breadcrumb-item" href="/">
-                    Home
-                  </a>
-                  <a className="breadcrumb-item" href="/indexs">
-                    Index List
-                  </a>
-                  <li className="breadcrumb-item active">Edit Index</li>
-                </CDBBreadcrumb>
                 <div className="mt-5 w-100">
                   <h4 className="font-weight-bold mb-3">Edit Field In Index</h4>
                 </div>
@@ -187,7 +195,8 @@ const EditIndexPage = (props) => {
                     required
                     style={{ width: "20%", height: "40px" }}
                   />
-                  <Form.Select
+
+                  <select
                     aria-label="Default select example"
                     style={{
                       height: "40px",
@@ -197,20 +206,19 @@ const EditIndexPage = (props) => {
                     onChange={handleOnChangeOption}
                   >
                     <option>Tìm theo</option>
-                    {data.hits
+                    {data.hits != undefined
                       ? Object.keys(data.hits[0]._source).map((key) => (
                           <option key={key} value={key}>
                             {jsUcfirst(key)}
                           </option>
                         ))
                       : null}
-                  </Form.Select>
+                  </select>
 
                   <Button className="button_index" onClick={handleSearchRecord}>
                     Tìm bản ghi
                   </Button>
                 </div>
-
                 <div style={{ display: "flex", margin: "10px" }}>
                   <>
                     <Form.Control
@@ -259,7 +267,7 @@ const EditIndexPage = (props) => {
                 </div>
               </div>
 
-              <CDBTable responsive className="table_render_data">
+              {/* <CDBTable responsive className="table_render_data">
                 <CDBTableHeader color="dark">
                   {data.hits !== undefined ? (
                     <tr>
@@ -270,34 +278,27 @@ const EditIndexPage = (props) => {
                       ))}
                       <th>Action</th>
                     </tr>
+
                   ) : null}
                 </CDBTableHeader>
                 <CDBTableBody>
-                  {data.hits !== undefined
-                    ? data.hits.map((value) => (
-                        <tr>
-                          <td>{value._id}</td>
-                          {Object.values(value._source).map((dat) => (
-                            <td>{dat}</td>
-                          ))}
-                          <td>
-                            <button className="btn btn-outline-primary">
-                              Edit
-                            </button>
-                            <button
-                              className="btn btn-outline-danger"
-                              style={{ margin: "4px" }}
-                              onClick={() => handleRemoveRecord(value._id)}
-                            >
-                              Remove
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    : null}
+                  {data.hits !== undefined ? (
+                    data.hits.map((value) =>
+                      <tr>
+                        <td>{value._id}</td>
+                        {Object.values(value._source).map(dat =>
+                          <td>{dat}</td>
+                        )}
+                        <td>
+                          <button className="btn btn-outline-primary" >Edit</button>
+                          <button className="btn btn-outline-danger" style={{ margin: "4px" }} onClick={() => handleRemoveRecord(value._id)}>Remove</button>
+                        </td>
+                      </tr>
+                    )
+                  ) : null}
                 </CDBTableBody>
-              </CDBTable>
-              {/* <CDBCard>
+              </CDBTable> */}
+              <CDBCard>
                 <CDBCardBody>
                   <CDBDataTable
                     striped
@@ -306,15 +307,14 @@ const EditIndexPage = (props) => {
                     responsive
                     checkbox
                     autoWidth={true}
-                    entriesOptions={[5, 20, 25]}
-                    entries={5}
+                    entriesOptions={[10, 50, 100]}
+                    entries={10}
                     pagesAmount={4}
                     data={dataTable}
                     materialSearch={true}
-
                   />
                 </CDBCardBody>
-              </CDBCard> */}
+              </CDBCard>
             </div>
           </div>
         </div>
