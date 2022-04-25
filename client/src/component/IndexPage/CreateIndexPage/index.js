@@ -28,6 +28,7 @@ export const CreateIndexPage = (props) => {
         const form = new FormData();
         form.append("indexname", indexName);
         form.append("dataindex", fileData);
+        console.log(fileData);
         try {
           let response = await axios.post("/data", form);
 
@@ -56,15 +57,7 @@ export const CreateIndexPage = (props) => {
         <li className="breadcrumb-item active">Edit Index</li>
       </CDBBreadcrumb>
       <div className="container_index">
-        <h4 className="header_indexs">Tạo Index</h4>
-
-        {/* <Form.Control
-          size="sm"
-          type="file"
-          placeholder="Small text"
-          onChange={handleUploadFile}
-          className="form-input"
-        /> */}
+        <h4 className="header_indexs">Create Index</h4>
 
         <label for="file-upload" className="custom-file-upload">
           <i className="bi bi-file-earmark-diff icon-file-plus"></i>
