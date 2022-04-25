@@ -7,8 +7,8 @@ var cors = require('cors')
 require('dotenv').config()
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const axios = require("axios");
+const esUrl = `https://${process.env.USER_NAME_BACH}:${process.env.PASSWORD_BACH}@${process.env.ELASTIC_IP_BACH}:9200/`;
 // const esUrl = `https://${process.env.USER_NAME}:${process.env.PASSWORD}@${process.env.ELASTIC_IP}:9200/`;
-const esUrl = `https://${process.env.USER_NAME}:${process.env.PASSWORD}@${process.env.ELASTIC_IP}:9200/`;
 
 const shortid = require('shortid')
 var multer = require('multer');
@@ -119,7 +119,7 @@ app.post("/data/:index", async (req, res) => {
     let match = {}
     let query = []
     let bool = {}
-    const { type, id, operator,size } = req.body;
+    const { type, id, operator, size } = req.body;
     console.log(size)
     delete match.type
     switch (type) {
@@ -154,7 +154,7 @@ app.post("/data/:index", async (req, res) => {
           Object.assign(bool, { should: query })
         }
         response = await axios.post(`${esUrl}${req.params.index}/_search?scroll=20m`, {
-          size:parseInt(size),
+          size: parseInt(size),
           track_total_hits: true,
           query: {
             bool: bool
@@ -163,11 +163,11 @@ app.post("/data/:index", async (req, res) => {
         break;
       default:
         /* response=await client.search({index:req.params.index,scroll:'1m',size:parseInt(size),body:{query:{match_all:{}}}})  */
-          response = await axios.post(`${esUrl}${req.params.index}/_search?scroll=1m`,{
-          size:parseInt(size),
+        response = await axios.post(`${esUrl}${req.params.index}/_search?scroll=1m`, {
+          size: parseInt(size),
           track_total_hits: true,
-          query:{
-            match_all:{}
+          query: {
+            match_all: {}
           }
         }); // dữ liệu trả về tổng số bản ghi và chỉ 20 bản ghi đầu tiên
         break;
@@ -248,18 +248,18 @@ app.get("/indexs", async (req, res) => {
     res.json(error);
   }
 });
-app.post("/nextpage",async(req,res)=>{
-  
-    try {
-      const {scroll_id}=req.body;
-      const response=await client.scroll({scroll_id:scroll_id,scroll:'1h'})
-      res.json(response)
-      
-    } catch (error) {
-      res.json(error)
-      
-    }
+app.post("/nextpage", async (req, res) => {
 
+  try {
+    const { scroll_id } = req.body;
+    console.log(scroll_id)
+    const response = await client.scroll({ scroll_id: scroll_id, scroll: '1h' })
+    console.log(response.data)
+
+    res.json(response)
+  } catch (error) {
+    res.json(error)
+  }
 })
 
 app.listen(3000, () => {

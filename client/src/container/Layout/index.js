@@ -1,5 +1,5 @@
 import React from "react";
-import Sidebar from "../../assets/sidebar";
+import Sidebar from "../../assets/sideBar";
 import Header from "../Header";
 import "./style.css";
 export default function Layout(props) {

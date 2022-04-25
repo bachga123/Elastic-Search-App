@@ -28,13 +28,13 @@ export const EditIndexPage = (props) => {
   const [idDeleteRecord, setIdDeleteRecord] = useState("");
   const [searchby, setSearchBy] = useState("");
   async function getData() {
-    let response = await axios.post(`/data/${indexId}`,{size:size});
+    let response = await axios.post(`/data/${indexId}`, { size: size });
     setData(response.data.hits);
     setScrollId(response.data._scroll_id)
     console.log(response)
   }
   async function SearchRecord() {
-    let response = await axios.post(`/data/${indexId}`, { type: "multi-matching", operator: "or",size:size, [searchby]: textSearchRecord });
+    let response = await axios.post(`/data/${indexId}`, { type: "multi-matching", operator: "or", size: size, [searchby]: textSearchRecord });
     console.log(response)
     if (response.status === 200) {
       setData(response.data.hits)
@@ -59,56 +59,60 @@ export const EditIndexPage = (props) => {
       getData()
     }
   }
-  
-  // async function getDataTable() {
-  //   const columnTable =
-  //   {
-  //     label: 'Id',
-  //     field: 'Id',
-  //     width: 100,
-  //     attributes: {
-  //       'aria-controls': 'DataTable',
-  //       'aria-label': 'Name',
-  //     },
-  //   };
-  //   const test = {
-  //     label: 'Nam',
-  //     field: 'Name',
-  //     width: 100,
-  //     attributes: {
-  //       'aria-controls': 'DataTable',
-  //       'aria-label': 'Name',
-  //     },
-  //   }
-  //   columnTable = columnTable.add(test)
-  //   const rowTable =
-  //   {
-  //     Id: 'Tiger Nixon',
-  //   };
-  //   const dataTable = {
-  //     columns: [columnTable],
-  //     rows: [rowTable]
-  //   }
-  //   setDataTable(dataTable);
-  // }
+  async function getDataTable() {
+    let response = await axios.post(`/data/${indexId}`, { size: 10000 });
+    const data = response.data.hits;
+    console.log(response.data)
+    const columnTable = [
+
+    ];
+    data.hits[0] && Object.keys(data.hits[0]._source).map((value) => {
+      const temp = {
+        label: value,
+        field: value,
+        width: 100,
+        attributes: {
+          'aria-controls': 'DataTable',
+          'aria-label': value,
+        }
+      }
+      columnTable.push(temp)
+    })
+
+
+    const rowTable = [
+
+    ];
+
+    data.hits[0] && data.hits.map(value => {
+      const obj = Object.entries(value._source)
+      const objtemp = Object.fromEntries(obj)
+      rowTable.push(objtemp);
+    })
+
+    const dataTable = {
+      columns: columnTable,
+      rows: rowTable
+    }
+    setDataTable(dataTable);
+  }
   useEffect(() => {
-    if(search===false){
+    if (search === false) {
       getData()
-    }else{
+    } else {
       SearchRecord()
     }
-    // getDataTable();
-  },[size]);
+    getDataTable();
+  }, [size]);
   const handleOnChangeOption = (e) => {
     if (e.target.value) {
       setSearchBy(e.target.value);
     }
   }
-  const handleRemoveRecord=(id)=>{
+  const handleRemoveRecord = (id) => {
     DeleteRecord(id)
   }
-  const jsUcfirst=  (string) =>
-  {
+  const jsUcfirst = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
   const handleSearchRecord = (e) => {
@@ -120,12 +124,12 @@ export const EditIndexPage = (props) => {
       SearchRecord()
     }
   };
-  const handleNextPage=(e)=>{
-    if(scroll_id===''){
+  const handleNextPage = (e) => {
+    if (scroll_id === '') {
       e.preventDefault();
-    }else{
+    } else {
       async function nextPage() {
-        let response = await axios.post(`/nextpage`,{scroll_id});
+        let response = await axios.post(`/nextpage`, { scroll_id });
         console.log(response)
         if (response.status === 200) {
           setScrollId(response.data._scroll_id)
@@ -155,7 +159,7 @@ export const EditIndexPage = (props) => {
       >
         <div style={{ height: "100%" }}>
           <div style={{ padding: "20px 5%", height: "calc(100% - 64px)", overflowY: "scroll" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(1, minmax(200px, 1000px))" ,width:"1800px"}}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(1, minmax(200px, 1000px))", width: "1800px" }}>
               <div style={{ display: "auto" }}>
                 <CDBBreadcrumb>
                   <a className="breadcrumb-item" href="/">
@@ -187,14 +191,13 @@ export const EditIndexPage = (props) => {
                     onChange={handleOnChangeOption}
                   >
                     <option>Tìm theo</option>
-                    {data.hits ? Object.keys(data.hits[0]._source).map(key => <option key={key} value={key}>{jsUcfirst(key)}</option>) : null}
+                    {data.hits != undefined ? Object.keys(data.hits[0]._source).map(key => <option key={key} value={key}>{jsUcfirst(key)}</option>) : null}
                   </Form.Select>
 
                   <Button className="button_index" onClick={handleSearchRecord}>
                     Tìm bản ghi
                   </Button>
                 </div>
-
                 <div style={{ display: "flex", margin: "10px" }}>
                   <>
                     <Form.Control
@@ -214,19 +217,19 @@ export const EditIndexPage = (props) => {
                 </div>
               </div>
               {/* co length moi render */}
-              <div className="container_headertable" style={{display:"flex",justifyContent:"space-between"}}>
-              {data.hits !== undefined ? (<h4>Tổng cộng có {data.total.value} bản ghi</h4>) : null}
-              <div className="container_button_pagination" style={{height:'40px'}}>
-              <Button onClick={handleNextPage}>Next Page</Button>
-              <select onChange={(e)=>setSize(e.target.value)} style={{height:'35px',margin:'5px'}}>
-                <option key={20} value={20}>20</option>
-                <option key={50} value={50}>50</option>
-                <option key={100} value={100}>100</option>
-              </select>
+              <div className="container_headertable" style={{ display: "flex", justifyContent: "space-between" }}>
+                {data.hits !== undefined ? (<h4>Tổng cộng có {data.total.value} bản ghi</h4>) : null}
+                <div className="container_button_pagination" style={{ height: '40px' }}>
+                  <Button onClick={handleNextPage}>Next Page</Button>
+                  <select onChange={(e) => setSize(e.target.value)} style={{ height: '35px', margin: '5px' }}>
+                    <option key={20} value={20}>20</option>
+                    <option key={50} value={50}>50</option>
+                    <option key={100} value={100}>100</option>
+                  </select>
+                </div>
               </div>
-              </div>
-              
-              <CDBTable responsive className="table_render_data">
+
+              {/* <CDBTable responsive className="table_render_data">
                 <CDBTableHeader color="dark">
                   {data.hits !== undefined ? (
                     <tr>
@@ -241,23 +244,23 @@ export const EditIndexPage = (props) => {
                   ) : null}
                 </CDBTableHeader>
                 <CDBTableBody>
-                      { data.hits !== undefined ? (
-                        data.hits.map((value) =>
-                          <tr>
-                            <td>{value._id}</td>
-                            {Object.values(value._source).map(dat =>
-                              <td>{dat}</td>
-                            )}
-                            <td>
-                              <button className="btn btn-outline-primary" >Edit</button>
-                              <button className="btn btn-outline-danger" style={{ margin: "4px" }} onClick={()=>handleRemoveRecord(value._id)}>Remove</button>
-                            </td>
-                          </tr>
-                        )
-                      ) : null }
-                    </CDBTableBody>
-                  </CDBTable>
-              {/* <CDBCard>
+                  {data.hits !== undefined ? (
+                    data.hits.map((value) =>
+                      <tr>
+                        <td>{value._id}</td>
+                        {Object.values(value._source).map(dat =>
+                          <td>{dat}</td>
+                        )}
+                        <td>
+                          <button className="btn btn-outline-primary" >Edit</button>
+                          <button className="btn btn-outline-danger" style={{ margin: "4px" }} onClick={() => handleRemoveRecord(value._id)}>Remove</button>
+                        </td>
+                      </tr>
+                    )
+                  ) : null}
+                </CDBTableBody>
+              </CDBTable> */}
+              <CDBCard>
                 <CDBCardBody>
                   <CDBDataTable
                     striped
@@ -266,15 +269,14 @@ export const EditIndexPage = (props) => {
                     responsive
                     checkbox
                     autoWidth={true}
-                    entriesOptions={[5, 20, 25]}
-                    entries={5}
+                    entriesOptions={[10, 50, 100]}
+                    entries={10}
                     pagesAmount={4}
                     data={dataTable}
                     materialSearch={true}
-
                   />
                 </CDBCardBody>
-              </CDBCard> */}
+              </CDBCard>
             </div>
           </div>
         </div>
