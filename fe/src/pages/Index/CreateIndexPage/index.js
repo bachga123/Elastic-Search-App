@@ -9,7 +9,7 @@ import "./style.css";
 import { CDBBreadcrumb } from "cdbreact";
 import { Spinner } from "react-bootstrap";
 
-export const CreateIndexPage = (props) => {
+const CreateIndexPage = (props) => {
   const navigate = useNavigate();
   const [fileData, setFileData] = useState("");
   const [indexName, setIndexName] = useState("");
@@ -99,3 +99,5 @@ export const CreateIndexPage = (props) => {
     </>
   );
 };
+
+export default CreateIndexPage;

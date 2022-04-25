@@ -11,8 +11,8 @@
 }
 
 .file-icon{
+
     font-size: 40px;
-    display: inline-flex;
 }
 
 .file-name{
@@ -20,7 +20,8 @@
     color: #000;
     margin: 0;
     position: absolute;
-    left: 18%;
+    left: 15%;
+
     top: 30%;
 }
 
