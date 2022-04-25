@@ -8,7 +8,7 @@ require('dotenv').config()
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const axios = require("axios");
 // const esUrl = `https://${process.env.USER_NAME}:${process.env.PASSWORD}@${process.env.ELASTIC_IP}:9200/`;
-const esUrl = `https://${process.env.USER_NAME_BACH}:${process.env.PASSWORD_BACH}@${process.env.ELASTIC_IP_BACH}:9200/`;
+const esUrl = `https://${process.env.USER_NAME}:${process.env.PASSWORD}@${process.env.ELASTIC_IP}:9200/`;
 
 const shortid = require('shortid')
 var multer = require('multer');
@@ -16,10 +16,6 @@ const path = require('path')
 const util = require('util')
 const fs = require('fs');
 const client = require("./connect");
-
-
-
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors())
@@ -31,10 +27,6 @@ const storage = multer.diskStorage({
     cb(null, `${shortid.generate()}-${file.originalname}`)
   },
 })
-
-let files = ["./sample.json"]
-const readFile = util.promisify(fs.readFile)
-
 const upload = multer({ storage })
 app.post("/create-index", async (req, res) => {
   console.log(req)
@@ -50,7 +42,6 @@ app.post("/create-index", async (req, res) => {
             resolve(false);
           });
       });
-
     const ifIndexExist = await checkIndexExist();
     if (!ifIndexExist) {
       const esResponse = await axios.put(`${esUrl}${req.body.index}`, {
@@ -128,7 +119,8 @@ app.post("/data/:index", async (req, res) => {
     let match = {}
     let query = []
     let bool = {}
-    const { type, id, operator } = req.body;
+    const { type, id, operator,size } = req.body;
+    console.log(size)
     delete match.type
     switch (type) {
       case "sorting":
@@ -153,7 +145,7 @@ app.post("/data/:index", async (req, res) => {
           Object.assign(match, { match: { [key]: req.body[key] } })
           query.push({ match: { [key]: req.body[key] } })
         })
-        query = query.slice(2)
+        query = query.slice(3)
         console.log(query)
         if (operator === "and") {
           Object.assign(bool, { must: query })
@@ -161,19 +153,27 @@ app.post("/data/:index", async (req, res) => {
         else {
           Object.assign(bool, { should: query })
         }
-        response = await axios.post(`${esUrl}${req.params.index}/_search?size=1000`, {
+        response = await axios.post(`${esUrl}${req.params.index}/_search?scroll=20m`, {
+          size:parseInt(size),
+          track_total_hits: true,
           query: {
             bool: bool
           },
         });
         break;
-
       default:
-        response = await axios.get(`${esUrl}${req.params.index}/_search?scroll=1m`); // dữ liệu trả về tổng số bản ghi và chỉ 20 bản ghi đầu tiên
+        /* response=await client.search({index:req.params.index,scroll:'1m',size:parseInt(size),body:{query:{match_all:{}}}})  */
+          response = await axios.post(`${esUrl}${req.params.index}/_search?scroll=1m`,{
+          size:parseInt(size),
+          track_total_hits: true,
+          query:{
+            match_all:{}
+          }
+        }); // dữ liệu trả về tổng số bản ghi và chỉ 20 bản ghi đầu tiên
         break;
     }
 
-    res.json(response.data.hits); // data trả về sẽ khác, thay đổi lại bên FE
+    res.json(response.data); // data trả về sẽ khác, thay đổi lại bên FE
   } catch (error) {
     res.json(error);
   }
@@ -184,11 +184,11 @@ app.post("/data/:index", async (req, res) => {
     "fields":["NOC","Name","Sex"]
 } muốn thêm bớt tuỳ do FE 
 Cái size tạm thời để cứng, sau này phát triển người dùng chọn size mình có thể thay đổi*/
-app.post("/search/:index", async (req, res) => {
+app.post("/search/:index/:size", async (req, res) => {
   try {
-    console.log(req.body)
+    console.log(req.params)
     let response = await axios.post(`${esUrl}${req.params.index}/_search?scroll=1m`, {
-      size: 30,
+      size: 20,
       query: {
         multi_match: req.body
       },
@@ -238,20 +238,29 @@ app.delete("/:index", async (req, res) => {
 app.get("/indexs", async (req, res) => {
   try {
     const response = await axios.get(
-      // `${esUrl}_cat/indices?h=index`
       `${esUrl}_cat/indices?pretty`
     );
-    // const allIndex = response.data.replace(/\n/g, ' ').split(" ");
-    // const result = allIndex.filter(word => word.length > 0)
     const allIndex = response.data.replace(/\n/g, ' ').split(" ");
     const temp = allIndex.filter(word => word.length > 0)
-    // const test = indexToJsonView(result)
     const result = CreateIndexJson(temp)
     res.json(result);
   } catch (error) {
     res.json(error);
   }
 });
+app.post("/nextpage",async(req,res)=>{
+  
+    try {
+      const {scroll_id}=req.body;
+      const response=await client.scroll({scroll_id:scroll_id,scroll:'1h'})
+      res.json(response)
+      
+    } catch (error) {
+      res.json(error)
+      
+    }
+
+})
 
 app.listen(3000, () => {
   console.log('App listening on port 3000!');

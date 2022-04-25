@@ -8,7 +8,19 @@
 .list_data{
 
 }
+<<<<<<< Updated upstream
 
+=======
+.table_render_data{
+    width: fit-content;
+}
+.header_indexs{
+    width: 100%;
+    margin-left: 300px;
+    margin-bottom: 50px;
+    margin-top: 40px;
+}
+>>>>>>> Stashed changes
 .form_manager{
     position: absolute;
     width: 40%;

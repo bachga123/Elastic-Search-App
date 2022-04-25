@@ -16,107 +16,131 @@ import {
   CDBDataTable,
 } from "cdbreact";
 import { CDBBreadcrumb } from "cdbreact";
-
 export const EditIndexPage = (props) => {
   const navigate = useNavigate();
   const params = useParams();
   const [data, setData] = useState([]);
+  const [size, setSize] = useState("20");
   const [dataTable, setDataTable] = useState([]);
+  const [search, setSearch] = useState(false);
+  const [scroll_id, setScrollId] = useState("");
   const { indexId } = params;
   const [textSearchRecord, setTextSearchRecord] = useState("");
   const [idDeleteRecord, setIdDeleteRecord] = useState("");
   const [searchby, setSearchBy] = useState("");
   async function getData() {
-    let response = await axios.post(`/data/${indexId}`);
-    setData(response.data);
+    let response = await axios.post(`/data/${indexId}`,{size:size});
+    setData(response.data.hits);
+    setScrollId(response.data._scroll_id)
+    console.log(response)
   }
-  async function getDataTable() {
-    let response = await axios.post(`/data/${indexId}`);
-    const data = response.data;
-    const columnTable = [
-      // {
-      //   label: "Id",
-      //   field: "Id",
-      //   width: 100,
-      //   attributes: {
-      //     "aria-controls": "DataTable",
-      //     "aria-label": "Name",
-      //   },
-      // },
-    ];
-    data.hits[0] &&
-      Object.keys(data.hits[0]._source).map((value) => {
-        const temp = {
-          label: value,
-          field: value,
-          width: 100,
-          attributes: {
-            "aria-controls": "DataTable",
-            "aria-label": value,
-          },
-        };
-        columnTable.push(temp);
-      });
-
-    const rowTable = [
-      // {Id: "Tiger Nixon" }
-    ];
-    {
-      data.hits &&
-        data.hits.map((value) => {
-          const obj = Object.entries(value._source);
-          const objtemp = Object.fromEntries(obj);
-          rowTable.push(objtemp);
-        });
+  async function SearchRecord() {
+    let response = await axios.post(`/data/${indexId}`, { type: "multi-matching", operator: "or",size:size, [searchby]: textSearchRecord });
+    console.log(response)
+    if (response.status === 200) {
+      setData(response.data.hits)
+      setScrollId(response.data._scroll_id)
     }
-    const dataTable = {
-      columns: columnTable,
-      rows: rowTable,
-    };
-    setDataTable(dataTable);
   }
+  async function DeleteRecord() {
+    let response = await axios.delete(`/data/${indexId}/${idDeleteRecord}`);
+    console.log(response)
+    if (response.status === 200) {
+      alert("xoá thành công")
+      setIdDeleteRecord('')
+      getData()
+    }
+  }
+  async function DeleteRecord(id) {
+    let response = await axios.delete(`/data/${indexId}/${id}`);
+    console.log(response)
+    if (response.status === 200) {
+      alert("xoá thành công")
+      setIdDeleteRecord('')
+      getData()
+    }
+  }
+  
+  // async function getDataTable() {
+  //   const columnTable =
+  //   {
+  //     label: 'Id',
+  //     field: 'Id',
+  //     width: 100,
+  //     attributes: {
+  //       'aria-controls': 'DataTable',
+  //       'aria-label': 'Name',
+  //     },
+  //   };
+  //   const test = {
+  //     label: 'Nam',
+  //     field: 'Name',
+  //     width: 100,
+  //     attributes: {
+  //       'aria-controls': 'DataTable',
+  //       'aria-label': 'Name',
+  //     },
+  //   }
+  //   columnTable = columnTable.add(test)
+  //   const rowTable =
+  //   {
+  //     Id: 'Tiger Nixon',
+  //   };
+  //   const dataTable = {
+  //     columns: [columnTable],
+  //     rows: [rowTable]
+  //   }
+  //   setDataTable(dataTable);
+  // }
   useEffect(() => {
-    getData();
-    getDataTable();
-  }, []);
+    if(search===false){
+      getData()
+    }else{
+      SearchRecord()
+    }
+    // getDataTable();
+  },[size]);
   const handleOnChangeOption = (e) => {
     if (e.target.value) {
       setSearchBy(e.target.value);
     }
-  };
+  }
+  const handleRemoveRecord=(id)=>{
+    DeleteRecord(id)
+  }
+  const jsUcfirst=  (string) =>
+  {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
   const handleSearchRecord = (e) => {
     if (textSearchRecord === "") {
       e.preventDefault();
-    } else {
-      async function SearchRecord() {
-        let response = await axios.post(`/data/${indexId}`, {
-          type: "multi-matching",
-          operator: "or",
-          [searchby]: textSearchRecord,
-        });
-
-        if (response.status === 200) {
-          setData(response.data);
-
-        }
-      }
-      SearchRecord();
+    }
+    else {
+      setSearch(true)
+      SearchRecord()
     }
   };
+  const handleNextPage=(e)=>{
+    if(scroll_id===''){
+      e.preventDefault();
+    }else{
+      async function nextPage() {
+        let response = await axios.post(`/nextpage`,{scroll_id});
+        console.log(response)
+        if (response.status === 200) {
+          setScrollId(response.data._scroll_id)
+          setData(response.data.hits)
+        }
+      }
+      nextPage()
+    }
+  }
   const handleDeleteRecord = (e) => {
     if (idDeleteRecord === "") {
       e.preventDefault();
     } else {
-      async function DeleteRecord() {
-        let response = await axios.delete(`/data/${indexId}/${idDeleteRecord}`);
-        console.log(response);
-        if (response.status === 200) {
-          alert("xoá thành công");
-          setIdDeleteRecord("");
-          getData();
-        }
-      }
-      DeleteRecord();
+      DeleteRecord()
     }
   };
   return (
@@ -131,19 +155,8 @@ export const EditIndexPage = (props) => {
         }}
       >
         <div style={{ height: "100%" }}>
-          <div
-            style={{
-              padding: "20px 5%",
-              height: "calc(100% - 64px)",
-              overflowY: "scroll",
-            }}
-          >
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(1, minmax(200px, 1000px))",
-              }}
-            >
+          <div style={{ padding: "20px 5%", height: "calc(100% - 64px)", overflowY: "scroll" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(1, minmax(200px, 1000px))" ,width:"1800px"}}>
               <div style={{ display: "auto" }}>
                 <CDBBreadcrumb>
                   <a className="breadcrumb-item" href="/">
@@ -175,13 +188,7 @@ export const EditIndexPage = (props) => {
                     onChange={handleOnChangeOption}
                   >
                     <option>Tìm theo</option>
-                    {data.hits
-                      ? Object.keys(data.hits[0]._source).map((key) => (
-                        <option key={key} value={key}>
-                          {key}
-                        </option>
-                      ))
-                      : null}
+                    {data.hits ? Object.keys(data.hits[0]._source).map(key => <option key={key} value={key}>{jsUcfirst(key)}</option>) : null}
                   </Form.Select>
 
                   <Button className="button_index" onClick={handleSearchRecord}>
@@ -208,32 +215,34 @@ export const EditIndexPage = (props) => {
                 </div>
               </div>
               {/* co length moi render */}
-              {data.hits !== undefined ? (
-                <h4>Tổng cộng có {data.hits.length} bản ghi</h4>
-              ) : null}
-              {/* <CDBTable responsive className={{ display: "80%" }}>
-                    <CDBTableHeader color="dark">
-                      {data.hits !== undefined ? (
-                        <tr>
-                          <th>Id</th>
-                          {Object.keys(data.hits[0]._source).map((value) => (
-                            <th>{value}</th>
-                          ))}
-                          <th>Action</th>
-                        </tr>
-                      ) : null}
-                    </CDBTableHeader>
-                    <CDBTableBody>
-                      <tr>
-                        <td>00</td>
-                        <td>
-                          <a href={`/index/School`}>Example Index</a>
-                        </td>
-                        <td key="school">School</td>
-                        <td>#</td>
-                        <td>#</td>
-                      </tr>
-                      {data.hits !== undefined ? (
+              <div className="container_headertable" style={{display:"flex",justifyContent:"space-between"}}>
+              {data.hits !== undefined ? (<h4>Tổng cộng có {data.total.value} bản ghi</h4>) : null}
+              <div className="container_button_pagination" style={{height:'40px'}}>
+              <Button onClick={handleNextPage}>Next Page</Button>
+              <select onChange={(e)=>setSize(e.target.value)} style={{height:'35px',margin:'5px'}}>
+                <option key={20} value={20}>20</option>
+                <option key={50} value={50}>50</option>
+                <option key={100} value={100}>100</option>
+              </select>
+              </div>
+              </div>
+              
+              <CDBTable responsive className="table_render_data">
+                <CDBTableHeader color="dark">
+                  {data.hits !== undefined ? (
+                    <tr>
+                      {console.log(scroll_id)}
+                      <th>Id</th>
+                      {Object.keys(data.hits[0]._source).map((value) => (
+                        <th>{jsUcfirst(value)}</th>
+                      ))}
+                      <th>Action</th>
+                    </tr>
+
+                  ) : null}
+                </CDBTableHeader>
+                <CDBTableBody>
+                      { data.hits !== undefined ? (
                         data.hits.map((value) =>
                           <tr>
                             <td>{value._id}</td>
@@ -242,13 +251,13 @@ export const EditIndexPage = (props) => {
                             )}
                             <td>
                               <button className="btn btn-outline-primary" >Edit</button>
-                              <button className="btn btn-outline-danger" style={{ margin: "4px" }}>Remove</button>
+                              <button className="btn btn-outline-danger" style={{ margin: "4px" }} onClick={()=>handleRemoveRecord(value._id)}>Remove</button>
                             </td>
                           </tr>
                         )
-                      ) : null}
+                      ) : null }
                     </CDBTableBody>
-                  </CDBTable> */}
+                  </CDBTable>
               {/* <CDBCard>
                 <CDBCardBody>
                   <CDBDataTable
