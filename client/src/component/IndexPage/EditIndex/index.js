@@ -34,15 +34,15 @@ export const EditIndexPage = (props) => {
     let response = await axios.post(`/data/${indexId}`);
     const data = response.data;
     const columnTable = [
-      {
-        label: "Id",
-        field: "Id",
-        width: 100,
-        attributes: {
-          "aria-controls": "DataTable",
-          "aria-label": "Name",
-        },
-      },
+      // {
+      //   label: "Id",
+      //   field: "Id",
+      //   width: 100,
+      //   attributes: {
+      //     "aria-controls": "DataTable",
+      //     "aria-label": "Name",
+      //   },
+      // },
     ];
     data.hits[0] &&
       Object.keys(data.hits[0]._source).map((value) => {
@@ -58,7 +58,9 @@ export const EditIndexPage = (props) => {
         columnTable.push(temp);
       });
 
-    const rowTable = [{ Id: "Tiger Nixon" }];
+    const rowTable = [
+      // {Id: "Tiger Nixon" }
+    ];
     {
       data.hits &&
         data.hits.map((value) => {
@@ -95,6 +97,7 @@ export const EditIndexPage = (props) => {
 
         if (response.status === 200) {
           setData(response.data);
+
         }
       }
       SearchRecord();
@@ -174,10 +177,10 @@ export const EditIndexPage = (props) => {
                     <option>Tìm theo</option>
                     {data.hits
                       ? Object.keys(data.hits[0]._source).map((key) => (
-                          <option key={key} value={key}>
-                            {key}
-                          </option>
-                        ))
+                        <option key={key} value={key}>
+                          {key}
+                        </option>
+                      ))
                       : null}
                   </Form.Select>
 
@@ -208,9 +211,7 @@ export const EditIndexPage = (props) => {
               {data.hits !== undefined ? (
                 <h4>Tổng cộng có {data.hits.length} bản ghi</h4>
               ) : null}
-              <div className="row">
-                <div className="col-sm">
-                  {/* <CDBTable responsive className={{ display: "80%" }}>
+              {/* <CDBTable responsive className={{ display: "80%" }}>
                     <CDBTableHeader color="dark">
                       {data.hits !== undefined ? (
                         <tr>
@@ -248,22 +249,24 @@ export const EditIndexPage = (props) => {
                       ) : null}
                     </CDBTableBody>
                   </CDBTable> */}
-                  <CDBCard>
-                    <CDBCardBody>
-                      <CDBDataTable
-                        striped
-                        bordered
-                        hover
-                        entriesOptions={[5, 20, 25]}
-                        entries={5}
-                        pagesAmount={4}
-                        data={dataTable}
-                        materialSearch={true}
-                      />
-                    </CDBCardBody>
-                  </CDBCard>
-                </div>
-              </div>
+              {/* <CDBCard>
+                <CDBCardBody>
+                  <CDBDataTable
+                    striped
+                    bordered
+                    hover
+                    responsive
+                    checkbox
+                    autoWidth={true}
+                    entriesOptions={[5, 20, 25]}
+                    entries={5}
+                    pagesAmount={4}
+                    data={dataTable}
+                    materialSearch={true}
+
+                  />
+                </CDBCardBody>
+              </CDBCard> */}
             </div>
           </div>
         </div>

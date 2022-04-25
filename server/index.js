@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(cors())
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, path.join(path.dirname(__dirname), 'project/uploads'))
+    cb(null, path.join(path.dirname(__dirname), 'server/uploads'))
   },
   filename(req, file, cb) {
     cb(null, `${shortid.generate()}-${file.originalname}`)
