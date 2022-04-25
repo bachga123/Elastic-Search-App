@@ -1,0 +1,18 @@
+.table-index{
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+   
+}
+
+
+.btn-create-index {
+    font-size: 24px;
+    background-color: #4897CF;
+    color: #fff;
+    height: 70px;
+    width: 200px;
+}
+
+
+.btn-create-index i{
+    font-size: 30px;
+}

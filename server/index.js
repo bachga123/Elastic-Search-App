@@ -7,7 +7,9 @@ var cors = require('cors')
 require('dotenv').config()
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const axios = require("axios");
-const esUrl = `https://${process.env.USER_NAME}:${process.env.PASSWORD}@${process.env.ELASTIC_IP}:9200/`;
+// const esUrl = `https://${process.env.USER_NAME}:${process.env.PASSWORD}@${process.env.ELASTIC_IP}:9200/`;
+const esUrl = `https://${process.env.USER_NAME_BACH}:${process.env.PASSWORD_BACH}@${process.env.ELASTIC_IP_BACH}:9200/`;
+
 const shortid = require('shortid')
 var multer = require('multer');
 const path = require('path')
@@ -183,13 +185,13 @@ app.post("/data/:index", async (req, res) => {
     "fields":["NOC","Name","Sex"]
 } muốn thêm bớt tuỳ do FE 
 Cái size tạm thời để cứng, sau này phát triển người dùng chọn size mình có thể thay đổi*/
-app.post("/search/:index",async (req,res)=>{
+app.post("/search/:index", async (req, res) => {
   try {
     console.log(req.body)
-    let response=await axios.post(`${esUrl}${req.params.index}/_search?scroll=1m`,{
-      size: 30, 
-      query:{
-        multi_match:req.body
+    let response = await axios.post(`${esUrl}${req.params.index}/_search?scroll=1m`, {
+      size: 30,
+      query: {
+        multi_match: req.body
       },
     })
     res.json(response.data.hits)
@@ -214,9 +216,9 @@ app.delete("/data/:index/:id", async (req, res) => {
 app.post("/data/:index/ids", async (req, res) => {
   try {
     const response = await axios.post(
-      `${esUrl}${req.params.index}/_delete_by_query`,{
-        query:req.body
-      }
+      `${esUrl}${req.params.index}/_delete_by_query`, {
+      query: req.body
+    }
     );
     res.json(response.data);
   } catch (error) {

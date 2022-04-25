@@ -6,6 +6,7 @@ import Layout from "../../../container/Layout";
 import axios from "../../../helper/axios";
 import FileItem from "./component/FileItem";
 import "./style.css";
+import { CDBBreadcrumb } from "cdbreact";
 export const CreateIndexPage = (props) => {
   const navigate = useNavigate();
   const [fileData, setFileData] = useState("");
@@ -29,11 +30,14 @@ export const CreateIndexPage = (props) => {
         form.append("dataindex", fileData);
         try {
           let response = await axios.post("/data", form);
+
           console.log(response);
           if (response.status === 200) {
             navigate("/indexs");
           }
         } catch (err) {
+          console.log(2);
+          console.log(form);
           console.log(err);
         }
       }
@@ -42,6 +46,15 @@ export const CreateIndexPage = (props) => {
   };
   return (
     <Layout>
+      <CDBBreadcrumb>
+        <a className="breadcrumb-item" href="/">
+          Home
+        </a>
+        <a className="breadcrumb-item" href="/indexs">
+          Index List
+        </a>
+        <li className="breadcrumb-item active">Edit Index</li>
+      </CDBBreadcrumb>
       <div className="container_index">
         <h4 className="header_indexs">Tạo Index</h4>
 
@@ -73,7 +86,7 @@ export const CreateIndexPage = (props) => {
           }}
           className="form-input"
         />
-        
+
         <FileItem name={fileData.name} />
 
         <Button onClick={handleCreateIndex} className="bt-submit">
