@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Layout from "../../../container/Layout";
 import axios from "../../../helper/axios";
 import { Button, NavItem } from "react-bootstrap";
 import "./style.css";
@@ -117,7 +116,7 @@ export const EditIndexPage = (props) => {
     }
   };
   return (
-    <Layout>
+    <>
       <div
         style={{
           flex: "1 1 auto",
@@ -268,6 +267,6 @@ export const EditIndexPage = (props) => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };

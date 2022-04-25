@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
-import Layout from "../../../container/Layout";
+
 import axios from "../../../helper/axios";
 import FileItem from "./component/FileItem";
 import "./style.css";
@@ -46,7 +46,7 @@ export const CreateIndexPage = (props) => {
     }
   };
   return (
-    <Layout>
+    <>
       <CDBBreadcrumb>
         <a className="breadcrumb-item" href="/">
           Home
@@ -86,6 +86,6 @@ export const CreateIndexPage = (props) => {
           Tạo
         </Button>
       </div>
-    </Layout>
+    </>
   );
 };

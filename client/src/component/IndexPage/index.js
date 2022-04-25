@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import Layout from "../../container/Layout";
 import axios from "../../helper/axios";
 import "./style.css";
 import { Button } from "react-bootstrap";
@@ -15,7 +14,7 @@ import {
 } from "cdbreact";
 import { Link } from "react-router-dom";
 import { CDBBreadcrumb } from "cdbreact";
-
+import "./style.css";
 export const IndexPage = (props) => {
   const [indexs, setIndexs] = useState([]);
   const [nameDeleteIndex, setNameDeleteIndex] = useState("");
@@ -45,7 +44,7 @@ export const IndexPage = (props) => {
   };
 
   return (
-    <Layout>
+    <>
       <CDBBreadcrumb>
         <a className="breadcrumb-item" href="/">
           Home
@@ -81,7 +80,7 @@ export const IndexPage = (props) => {
                 <h1 className="font-weight-bold mb-3">Index List</h1>
                 <a
                   color="secondary"
-                  className="btn btn-create-index"
+                  className=" btn-create-index"
                   href="/create-index"
                 >
                   <i class="bi bi-plus"></i>
@@ -146,6 +145,6 @@ export const IndexPage = (props) => {
         </div>
       </div>
       <form name="deleteIndexForm" class="mt-4" method="POST"></form>
-    </Layout>
+    </>
   );
 };

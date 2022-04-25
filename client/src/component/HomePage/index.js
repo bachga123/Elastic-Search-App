@@ -1,10 +1,5 @@
-import React from 'react'
-import Layout from '../../container/Layout'
+import React from "react";
 
 export const HomePage = (props) => {
-  return (
-    <Layout>
-        Platform Elastic
-    </Layout>
-  )
-}
+  return <div>Platform Elastic</div>;
+};
