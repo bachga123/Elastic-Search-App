@@ -29,7 +29,7 @@ const EditIndexPage = (props) => {
   const [idDeleteRecord, setIdDeleteRecord] = useState("");
   const [searchby, setSearchBy] = useState("");
   async function getData() {
-    let response = await axios.post(`/api/data/${indexId}`,{ size: size });
+    let response = await axios.post(`/api/data/${indexId}`, { size: size });
     setData(response.data.hits);
     setScrollId(response.data._scroll_id);
     console.log(response);
@@ -44,6 +44,7 @@ const EditIndexPage = (props) => {
     console.log(response);
     if (response.status === 200) {
       setData(response.data.hits);
+      getDataTable(response.data.hits);
       setScrollId(response.data._scroll_id);
     }
   }
@@ -54,6 +55,7 @@ const EditIndexPage = (props) => {
       alert("xoá thành công");
       setIdDeleteRecord("");
       getData();
+      getDataTable();
     }
   }
   async function DeleteRecord(id) {
@@ -63,6 +65,7 @@ const EditIndexPage = (props) => {
       alert("xoá thành công");
       setIdDeleteRecord("");
       getData();
+      getDataTable();
     }
   }
   async function getDataTable() {
@@ -89,6 +92,8 @@ const EditIndexPage = (props) => {
     data.hits[0] &&
       data.hits.map((value) => {
         const obj = Object.entries(value._source);
+        const idField = ["idField", value._id];
+        obj.unshift(idField)
         const objtemp = Object.fromEntries(obj);
         rowTable.push(objtemp);
       });
@@ -107,6 +112,10 @@ const EditIndexPage = (props) => {
     }
     getDataTable();
   }, [size]);
+  const handleReloadRecord = () => {
+    getData();
+    getDataTable();
+  }
   const handleOnChangeOption = (e) => {
     if (e.target.value) {
       setSearchBy(e.target.value);
@@ -208,15 +217,18 @@ const EditIndexPage = (props) => {
                     <option>Tìm theo</option>
                     {data.hits != undefined
                       ? Object.keys(data.hits[0]._source).map((key) => (
-                          <option key={key} value={key}>
-                            {jsUcfirst(key)}
-                          </option>
-                        ))
+                        <option key={key} value={key}>
+                          {jsUcfirst(key)}
+                        </option>
+                      ))
                       : null}
                   </select>
 
                   <Button className="button_index" onClick={handleSearchRecord}>
                     Tìm bản ghi
+                  </Button>
+                  <Button className="reload_button" onClick={handleReloadRecord}>
+                    Reload
                   </Button>
                 </div>
                 <div style={{ display: "flex", margin: "10px" }}>
@@ -232,7 +244,7 @@ const EditIndexPage = (props) => {
                     <br />
                   </>
                   <Button className="button_index" onClick={handleDeleteRecord}>
-                    {" "}
+
                     Xoá bản ghi
                   </Button>
                 </div>
@@ -245,7 +257,7 @@ const EditIndexPage = (props) => {
                 {data.hits !== undefined ? (
                   <h4>Tổng cộng có {data.total.value} bản ghi</h4>
                 ) : null}
-                <div
+                {/* <div
                   className="container_button_pagination"
                   style={{ height: "40px" }}
                 >
@@ -264,7 +276,7 @@ const EditIndexPage = (props) => {
                       100
                     </option>
                   </select>
-                </div>
+                </div> */}
               </div>
 
               {/* <CDBTable responsive className="table_render_data">

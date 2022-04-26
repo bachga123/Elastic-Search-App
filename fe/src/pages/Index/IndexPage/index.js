@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../../helper/axios";
 import "./style.css";
-import { Button } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
 import { Table } from "react-bootstrap";
+import { useNavigate } from "react-router";
 import {
   CDBBtn,
   CDBLink,
@@ -18,13 +19,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteIndex, getIndex } from "../../../action/user";
 
 const IndexPage = (props) => {
+  const navigate = useNavigate();
   const [indexs, setIndexs] = useState([]);
   const [nameDeleteIndex, setNameDeleteIndex] = useState("");
   const auth = useSelector((state) => state.auth);
   const user = useSelector((state) => state.user);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     dispatch(getIndex());
@@ -47,6 +49,39 @@ const IndexPage = (props) => {
       dispatch(deleteIndex());
     }
   };
+
+  //Insert data to exists index
+  const handleUploadFile = (e) => {
+    setFileData(e.target.files[0]);
+  };
+  const handleCreateIndex = (e) => {
+    setIsLoading(true);
+    if (indexName === "" || fileData === "") {
+      e.preventDefault();
+    } else {
+      async function createIndex() {
+        const form = new FormData();
+        form.append("indexname", indexName);
+        form.append("dataindex", fileData);
+        console.log(fileData);
+        try {
+          let response = await axios.post("/data", form);
+
+          console.log(response);
+          if (response.status === 200) {
+            navigate("/indexs");
+          }
+          setIsLoading(false);
+        } catch (err) {
+          console.log(2);
+          console.log(form);
+          console.log(err);
+        }
+      }
+      createIndex();
+    }
+  };
+
 
   return (
     <>
@@ -121,7 +156,14 @@ const IndexPage = (props) => {
                           <td>{store_size}</td>
                           <td>
                             <Button
+                              className="btn-primary"
+                              onClick={handleShow}
+                            >
+                              Add Data
+                            </Button>
+                            <Button
                               className="btn-danger"
+                              display={{ margin: "4px" }}
                               onClick={(e) => {
                                 handleDeleteIndex(e);
                               }}
@@ -145,7 +187,65 @@ const IndexPage = (props) => {
           </div>
         </div>
       </div>
-      <form name="deleteIndexForm" class="mt-4" method="POST"></form>
+      <Modal show={showModal} onHide={handleClose}>
+        <Modal.Header>
+          <Modal.Title>Add data to index</Modal.Title>
+        </Modal.Header>
+        <Modal.Body >
+          {/* <div>
+            <label for="file-upload" className="custom-file-upload">
+              <i className="bi bi-file-earmark-diff icon-file-plus"></i>
+              <p>JSON File</p>
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              onChange={handleUploadFile}
+              style={{ width: "80px" }}
+            />
+
+
+          <Button
+            onClick={handleCreateIndex}
+            className="bt-submit"
+            disabled={isLoading}
+          >
+            Tạo
+          </Button>
+        </div> */}
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>
+                <i className="bi bi-file-earmark-diff icon-file-plus"></i>
+                <p>JSON File</p>
+              </Form.Label>
+
+
+              <FormFileInput
+                id="file-upload"
+                type="file"
+                onChange={handleUploadFile}
+                style={{ width: "80px" }}>
+
+              </FormFileInput>
+              <FileItem name={fileData.name}></FileItem>
+            </Form.Group>
+
+
+
+          </Form>
+        </Modal.Body>
+
+
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
