@@ -34,16 +34,12 @@ const CreateIndexPage = (props) => {
         form.append("dataindex", fileData);
         console.log(fileData);
         try {
-          let response = await axios.post("/data", form);
-
-          console.log(response);
+          let response = await axios.post("/api/data", form);
           if (response.status === 200) {
             navigate("/indexs");
           }
           setIsLoading(false);
         } catch (err) {
-          console.log(2);
-          console.log(form);
           console.log(err);
         }
       }

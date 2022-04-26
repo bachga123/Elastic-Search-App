@@ -29,13 +29,13 @@ const EditIndexPage = (props) => {
   const [idDeleteRecord, setIdDeleteRecord] = useState("");
   const [searchby, setSearchBy] = useState("");
   async function getData() {
-    let response = await axios.post(`/data/${indexId}`, { size: size });
+    let response = await axios.post(`/api/data/${indexId}`,{ size: size });
     setData(response.data.hits);
     setScrollId(response.data._scroll_id);
     console.log(response);
   }
   async function SearchRecord() {
-    let response = await axios.post(`/data/${indexId}`, {
+    let response = await axios.post(`/api/data/${indexId}`, {
       type: "multi-matching",
       operator: "or",
       size: size,
@@ -48,7 +48,7 @@ const EditIndexPage = (props) => {
     }
   }
   async function DeleteRecord() {
-    let response = await axios.delete(`/data/${indexId}/${idDeleteRecord}`);
+    let response = await axios.delete(`/api/data/${indexId}/${idDeleteRecord}`);
     console.log(response);
     if (response.status === 200) {
       alert("xoá thành công");
@@ -57,7 +57,7 @@ const EditIndexPage = (props) => {
     }
   }
   async function DeleteRecord(id) {
-    let response = await axios.delete(`/data/${indexId}/${id}`);
+    let response = await axios.delete(`/api/data/${indexId}/${id}`);
     console.log(response);
     if (response.status === 200) {
       alert("xoá thành công");
@@ -66,7 +66,7 @@ const EditIndexPage = (props) => {
     }
   }
   async function getDataTable() {
-    let response = await axios.post(`/data/${indexId}`, { size: 10000 });
+    let response = await axios.post(`/api/data/${indexId}`, { size: 20000 });
     const data = response.data.hits;
     console.log(response.data);
     const columnTable = [];

@@ -1,24 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-
 import "./style.css";
-
+import { Navigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { Link } from "react-router-dom";
-
-SignIn.propTypes = {};
+import { Link,useNavigate } from "react-router-dom";
+import axios from "../../../helper/axios";
+import { authConstants } from "../../../action/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../../action/auth";
 
 function SignIn(props) {
-  const onChangeLoginForm = () => {};
-
-  const handleSubmit = () => {};
+  const [email,setEmail]=useState('')
+  const [password,setPassword]=useState('')
+  const dispatch = useDispatch();
+  const navigate  = useNavigate();
+  const auth = useSelector((state) => state.auth);
+  const handleSubmit = async (e) => {
+    if(email===''|| password===""){
+      e.preventDefault()
+    }else{
+      e.preventDefault()
+      dispatch(login(email,password,props.history));
+    }
+  }
+  useEffect(()=>{
+    if(auth.authenticate){
+      navigate('/')
+    }
+  },[dispatch,auth.authenticate])
 
   return (
     <>
       <div className="form-auth">
         <h1 className="form-title">Sign in</h1>
-        <Form className="my-4" onSubmit={handleSubmit}>
+        <Form className="my-4">
           <Form.Group>
             <Form.Control
               type="text"
@@ -26,7 +42,7 @@ function SignIn(props) {
               placeholder="Email"
               name="email"
               required
-              onChange={onChangeLoginForm}
+              onChange={(e)=>setEmail(e.target.value)}
             />
           </Form.Group>
           <Form.Group>
@@ -36,11 +52,11 @@ function SignIn(props) {
               placeholder="Password"
               name="password"
               required
-              onChange={onChangeLoginForm}
+              onChange={(e)=>setPassword(e.target.value)}
             />
           </Form.Group>
 
-          <Button className="btsubmit " variant="info" type="submit">
+          <Button className="btsubmit " variant="info" type="submit" onClick={handleSubmit}>
             Login
           </Button>
         </Form>

@@ -8,8 +8,10 @@ import {
   CDBSidebarMenuItem,
 } from "cdbreact";
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
+  const auth = useSelector((state) => state.auth);
   return (
     <div
       className={`app`}
@@ -34,7 +36,7 @@ const Sidebar = () => {
             <NavLink exact to="/" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="columns">dashboard</CDBSidebarMenuItem>
             </NavLink>
-            <NavLink exact to="/indexs" activeClassName="activeClicked">
+            <NavLink exact to={`${auth.authenticate?"/indexs":"/sign-in"}`} activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="table">Indexs</CDBSidebarMenuItem>
             </NavLink>
             <NavLink exact to="/profile" activeClassName="activeClicked">
