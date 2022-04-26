@@ -4,3 +4,5 @@ Delete field
 
 
 Login/register
+
+connect key: ssh -i "elasticaws.pem" ubuntu@ec2-3-218-176-35.compute-1.amazonaws.com
