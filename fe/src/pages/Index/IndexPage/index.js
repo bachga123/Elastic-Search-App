@@ -11,28 +11,31 @@ import {
   CDBTableBody,
   CDBTableHeader,
 } from "cdbreact";
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CDBBreadcrumb } from "cdbreact";
 import "./style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteIndex, getIndex } from "../../../action/user";
+
 const IndexPage = (props) => {
   const [indexs, setIndexs] = useState([]);
   const [nameDeleteIndex, setNameDeleteIndex] = useState("");
   const auth = useSelector((state) => state.auth);
   const user = useSelector((state) => state.user);
-  const token=localStorage.getItem('token')
-  const dispatch = useDispatch()
-  const navigate=useNavigate()
+  const token = localStorage.getItem("token");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   useEffect(() => {
     dispatch(getIndex());
   }, [auth.authenticate]);
-  useEffect(()=>{
-    if(!token){
-      navigate('/sign-in')
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/sign-in");
     }
-  },[dispatch,auth.authenticate])
-/*   async function getIndex() {
+  }, [dispatch, auth.authenticate]);
+  /*   async function getIndex() {
     let response = await axios.get("/api/indexs");
     setIndexs(response.data);
   } */
@@ -41,7 +44,7 @@ const IndexPage = (props) => {
     if (nameDeleteIndex === "") {
       e.preventDefault();
     } else {
-      dispatch(deleteIndex())
+      dispatch(deleteIndex());
     }
   };
 
@@ -84,9 +87,8 @@ const IndexPage = (props) => {
                   color="secondary"
                   className=" btn-create-index"
                   href="/create-index"
-                  style={{height:"50px",boxSizing:"content-box"}}
+                  style={{ height: "35px", boxSizing: "content-box" }}
                 >
-                  <i class="bi bi-plus"></i>
                   Add index
                 </a>
               </div>
@@ -106,8 +108,7 @@ const IndexPage = (props) => {
                   </tr>
                 </CDBTableHeader>
                 <CDBTableBody>
-                  
-                  {user.index.length!==0 ?
+                  {user.index.length !== 0 ? (
                     user.index.map(
                       ({ id, index, status, docs_count, store_size }) => (
                         <tr>
@@ -131,8 +132,13 @@ const IndexPage = (props) => {
                           </td>
                         </tr>
                       )
-                    ):<div>
-                      <h8>Bạn chưa có index.</h8><a href="create-index">Tạo index</a></div>}
+                    )
+                  ) : (
+                    <div>
+                      <h8>Bạn chưa có index.</h8>
+                      <a href="create-index">Tạo index</a>
+                    </div>
+                  )}
                 </CDBTableBody>
               </CDBTable>
             </div>
