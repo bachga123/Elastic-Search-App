@@ -70,7 +70,6 @@ export const EditIndexPage = (props) => {
       const temp = {
         label: value,
         field: value,
-        width: 100,
         attributes: {
           'aria-controls': 'DataTable',
           'aria-label': value,
@@ -268,7 +267,6 @@ export const EditIndexPage = (props) => {
                     hover
                     responsive
                     checkbox
-                    autoWidth={true}
                     entriesOptions={[10, 50, 100]}
                     entries={10}
                     pagesAmount={4}

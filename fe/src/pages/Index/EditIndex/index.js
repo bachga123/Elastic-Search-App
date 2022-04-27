@@ -76,15 +76,23 @@ const EditIndexPage = (props) => {
     console.log(data)
     handleDataTable(data.hits)
   }
-  const handleDataTable=(hits)=>{
+  const handleDataTable = (hits) => {
     console.log(hits)
-    const columnTable = [];
+    const columnTable = [
+      {
+        label: "Id",
+        field: "idField",
+        attributes: {
+          "aria-controls": "DataTable",
+          "aria-label": "idField",
+        },
+      },
+    ];
     hits[0] &&
       Object.keys(hits[0]._source).map((value) => {
         const temp = {
           label: value,
           field: value,
-          width: 100,
           attributes: {
             "aria-controls": "DataTable",
             "aria-label": value,
@@ -116,7 +124,7 @@ const EditIndexPage = (props) => {
     } else {
       SearchRecord();
     }
-   getDataTable(); 
+    getDataTable();
   }, [size]);
   const handleReloadRecord = () => {
     getData();
