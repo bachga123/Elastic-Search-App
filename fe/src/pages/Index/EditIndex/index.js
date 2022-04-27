@@ -51,6 +51,7 @@ const EditIndexPage = (props) => {
     }
   }
   async function DeleteRecord() {
+    console.log(idDeleteRecord)
     let response = await axios.delete(`/api/data/${indexId}/${idDeleteRecord}`);
     console.log(response);
     if (response.status === 200) {
@@ -60,7 +61,7 @@ const EditIndexPage = (props) => {
       getDataTable();
     }
   }
-  async function DeleteRecord(id) {
+  async function DeleteRecordId(id) {
     let response = await axios.delete(`/api/data/${indexId}/${id}`);
     console.log(response);
     if (response.status === 200) {
@@ -136,7 +137,7 @@ const EditIndexPage = (props) => {
     }
   };
   const handleRemoveRecord = (id) => {
-    DeleteRecord(id);
+    DeleteRecordId(id);
   };
   const jsUcfirst = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -165,9 +166,10 @@ const EditIndexPage = (props) => {
     }
   };
   const handleDeleteRecord = (e) => {
-    if (idDeleteRecord === "") {
+    if (idDeleteRecord === ""||idDeleteRecord===undefined) {
       e.preventDefault();
     } else {
+      console.log(idDeleteRecord)
       DeleteRecord();
     }
   };
