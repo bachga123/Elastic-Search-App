@@ -44,8 +44,10 @@ const EditIndexPage = (props) => {
     console.log(response);
     if (response.status === 200) {
       setData(response.data.hits);
-      getDataTable(response.data.hits);
+      /* getDataTable(response.data.hits); */
       setScrollId(response.data._scroll_id);
+      handleDataTable(response.data.hits.hits)
+
     }
   }
   async function DeleteRecord() {
@@ -71,10 +73,14 @@ const EditIndexPage = (props) => {
   async function getDataTable() {
     let response = await axios.post(`/api/data/${indexId}`, { size: 20000 });
     const data = response.data.hits;
-    console.log(response.data);
+    console.log(data)
+    handleDataTable(data.hits)
+  }
+  const handleDataTable=(hits)=>{
+    console.log(hits)
     const columnTable = [];
-    data.hits[0] &&
-      Object.keys(data.hits[0]._source).map((value) => {
+    hits[0] &&
+      Object.keys(hits[0]._source).map((value) => {
         const temp = {
           label: value,
           field: value,
@@ -89,8 +95,8 @@ const EditIndexPage = (props) => {
 
     const rowTable = [];
 
-    data.hits[0] &&
-      data.hits.map((value) => {
+    hits[0] &&
+      hits.map((value) => {
         const obj = Object.entries(value._source);
         const idField = ["idField", value._id];
         obj.unshift(idField)
@@ -110,7 +116,7 @@ const EditIndexPage = (props) => {
     } else {
       SearchRecord();
     }
-    getDataTable();
+   getDataTable(); 
   }, [size]);
   const handleReloadRecord = () => {
     getData();

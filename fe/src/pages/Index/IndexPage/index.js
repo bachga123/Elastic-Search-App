@@ -3,7 +3,6 @@ import axios from "../../../helper/axios";
 import "./style.css";
 import { Button, Form, Modal } from "react-bootstrap";
 import { Table } from "react-bootstrap";
-import { useNavigate } from "react-router";
 import {
   CDBBtn,
   CDBLink,
@@ -12,22 +11,26 @@ import {
   CDBTableBody,
   CDBTableHeader,
 } from "cdbreact";
+import FileItem from './index_file'
 import { Link, useNavigate } from "react-router-dom";
 import { CDBBreadcrumb } from "cdbreact";
 import "./style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteIndex, getIndex } from "../../../action/user";
+import FormFileInput from "react-bootstrap/esm/FormFileInput";
 
 const IndexPage = (props) => {
   const navigate = useNavigate();
   const [indexs, setIndexs] = useState([]);
+  const [show, setShow] = useState(false);
+  const [fileData, setFileData] = useState("");
+  const [indexName, setIndexName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [nameDeleteIndex, setNameDeleteIndex] = useState("");
   const auth = useSelector((state) => state.auth);
   const user = useSelector((state) => state.user);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
-
-
   useEffect(() => {
     dispatch(getIndex());
   }, [auth.authenticate]);
@@ -82,7 +85,15 @@ const IndexPage = (props) => {
     }
   };
 
+  const handleShow=()=>{
+    setShow(true)
+  }
+  const showModal=()=>{
 
+  }
+  const handleClose=()=>{
+    setShow(false)
+  }
   return (
     <>
       <CDBBreadcrumb>
@@ -187,9 +198,9 @@ const IndexPage = (props) => {
           </div>
         </div>
       </div>
-      <Modal show={showModal} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose}>
         <Modal.Header>
-          <Modal.Title>Add data to index</Modal.Title>
+          <Modal.Title onClick={()=>setShow(true)}>Add data to index</Modal.Title>
         </Modal.Header>
         <Modal.Body >
           {/* <div>
