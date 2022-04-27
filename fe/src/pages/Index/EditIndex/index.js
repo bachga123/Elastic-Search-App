@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../../helper/axios";
-import { Button, NavItem } from "react-bootstrap";
+import { Button, Card, NavItem } from "react-bootstrap";
 import "./style.css";
 import { useNavigate, useParams } from "react-router-dom";
 import Form from "react-bootstrap/Form";
@@ -28,6 +28,8 @@ const EditIndexPage = (props) => {
   const [textSearchRecord, setTextSearchRecord] = useState("");
   const [idDeleteRecord, setIdDeleteRecord] = useState("");
   const [searchby, setSearchBy] = useState("");
+  const [hidden, setHidden] = useState(false);
+  const [searchField, setSearchField] = useState([])
   async function getData() {
     let response = await axios.post(`/api/data/${indexId}`, { size: size });
     setData(response.data.hits);
@@ -72,7 +74,7 @@ const EditIndexPage = (props) => {
     }
   }
   async function getDataTable() {
-    let response = await axios.post(`/api/data/${indexId}`, { size: 20000 });
+    let response = await axios.post(`/api/data/${indexId}`, { size: 10000 });
     const data = response.data.hits;
     console.log(data)
     handleDataTable(data.hits)
@@ -83,6 +85,7 @@ const EditIndexPage = (props) => {
       {
         label: "Id",
         field: "idField",
+
         attributes: {
           "aria-controls": "DataTable",
           "aria-label": "idField",
@@ -166,23 +169,50 @@ const EditIndexPage = (props) => {
     }
   };
   const handleDeleteRecord = (e) => {
-    if (idDeleteRecord === ""||idDeleteRecord===undefined) {
+    if (idDeleteRecord === "" || idDeleteRecord === undefined) {
       e.preventDefault();
     } else {
       console.log(idDeleteRecord)
       DeleteRecord();
     }
   };
+
+  const listSearchField = [
+    {
+      value: "",
+      options: "",
+    },
+  ]
+
+  const addSearchField = () => {
+    setSearchField(searchField => {
+      return [...searchField,
+      {
+        value: "",
+        options: ""
+      }]
+    })
+  }
+  const handleRemoveSearchField = index => {
+    const list = [...searchField];
+    list.splice(index, 1);
+    setSearchField(list);
+  }
+  const handleAddSearchField = (e) => {
+    addSearchField();
+    console.log(searchField)
+  }
+
   return (
     <>
       <CDBBreadcrumb>
         <a className="breadcrumb-item" href="/">
-          Home
+          Trang chủ
         </a>
         <a className="breadcrumb-item" href="/indexs">
-          Index List
+          Danh sách index
         </a>
-        <li className="breadcrumb-item active">Edit Index</li>
+        <li className="breadcrumb-item active">Chỉnh sửa index</li>
       </CDBBreadcrumb>
       <div
         style={{
@@ -210,43 +240,99 @@ const EditIndexPage = (props) => {
             >
               <div style={{ display: "auto" }}>
                 <div className="mt-5 w-100">
-                  <h4 className="font-weight-bold mb-3">Edit Field In Index</h4>
+                  <h4 className="font-weight-bold mb-3">Danh sách các field trong index</h4>
                 </div>
-                <div style={{ display: "flex", margin: "10px" }}>
-                  <Form.Control
-                    type="text"
-                    value={textSearchRecord}
-                    onChange={(e) => setTextSearchRecord(e.target.value)}
-                    required
-                    style={{ width: "20%", height: "40px" }}
-                  />
+                <div>
 
-                  <select
-                    aria-label="Default select example"
-                    style={{
-                      height: "40px",
-                      marginLeft: "10px",
-                      width: "170px",
-                    }}
-                    onChange={handleOnChangeOption}
-                  >
-                    <option>Tìm theo</option>
-                    {data.hits != undefined
-                      ? Object.keys(data.hits[0]._source).map((key) => (
-                        <option key={key} value={key}>
-                          {jsUcfirst(key)}
-                        </option>
-                      ))
-                      : null}
-                  </select>
+                  <div style={{ display: "flex", margin: "10px" }}>
 
-                  <Button className="button_index" onClick={handleSearchRecord}>
-                    Tìm bản ghi
-                  </Button>
-                  <Button className="reload_button" onClick={handleReloadRecord}>
-                    Reload
-                  </Button>
+                    <Form.Control
+                      type="text"
+                      value={textSearchRecord}
+                      onChange={(e) => setTextSearchRecord(e.target.value)}
+                      required
+                      style={{ width: "20%", height: "40px" }}
+                    />
+
+                    <select
+                      aria-label="Default select example"
+                      style={{
+                        height: "40px",
+                        marginLeft: "10px",
+                        width: "170px",
+                      }}
+                      onChange={handleOnChangeOption}
+                    >
+                      <option>Tìm theo</option>
+                      {data.hits != undefined
+                        ? Object.keys(data.hits[0]._source).map((key) => (
+                          <option key={key} value={key}>
+                            {jsUcfirst(key)}
+                          </option>
+                        ))
+                        : null}
+                    </select>
+                    <select
+                      aria-label="Default select example"
+                      style={{
+                        height: "40px",
+                        marginLeft: "10px",
+                        width: "170px",
+                      }}
+                      onChange={handleOnChangeOption}>
+                      <option>Type</option>
+                      <option>And</option>
+                      <option>OR</option>
+
+                    </select>
+                    <Button className="button_index" onClick={handleSearchRecord}>
+                      Tìm bản ghi
+                    </Button>
+
+                    <Button className="reload_button" onClick={handleReloadRecord} style={{ margin: "0 4px" }}>
+                      Tải lại trang
+                    </Button>
+                    <Button onClick={handleAddSearchField}>
+                      +
+                    </Button>
+
+                  </div>
+                  {searchField !== null ? (searchField.map((value) => (
+                    <div style={{ display: "flex", margin: "10px" }}>
+
+                      <Form.Control
+                        type="text"
+                        required
+                        style={{ width: "20%", height: "40px" }}
+                      />
+
+                      <select
+                        aria-label="Default select example"
+                        style={{
+                          height: "40px",
+                          marginLeft: "10px",
+                          width: "170px",
+                        }}
+                        onChange={handleOnChangeOption}
+                      >
+                        <option>Tìm theo</option>
+                        {data.hits != undefined
+                          ? Object.keys(data.hits[0]._source).map((key) => (
+                            <option key={key} value={key}>
+                              {jsUcfirst(key)}
+                            </option>
+                          ))
+                          : null}
+                      </select>
+                      <Button style={{ margin: "0 10px" }} onClick={() => handleRemoveSearchField(value)}>-</Button>
+                    </div>
+                  ))) : null
+                  }
+
                 </div>
+
+
+
                 <div style={{ display: "flex", margin: "10px" }}>
                   <>
                     <Form.Control
@@ -260,7 +346,6 @@ const EditIndexPage = (props) => {
                     <br />
                   </>
                   <Button className="button_index" onClick={handleDeleteRecord}>
-
                     Xoá bản ghi
                   </Button>
                 </div>
@@ -326,15 +411,15 @@ const EditIndexPage = (props) => {
                   ) : null}
                 </CDBTableBody>
               </CDBTable> */}
-              <CDBCard>
+              <CDBCard style={{ width: "fit-content" }}>
                 <CDBCardBody>
                   <CDBDataTable
                     striped
                     bordered
                     hover
-                    responsive
+                    responsiveXL
                     checkbox
-                    autoWidth={true}
+                    fixed
                     entriesOptions={[10, 50, 100]}
                     entries={10}
                     pagesAmount={4}
