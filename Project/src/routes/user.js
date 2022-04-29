@@ -22,13 +22,16 @@ router.post(
     `/data`,requireSignin,upload.single('dataindex'),UserController.createIndexAndUpData
 )
 router.post(
-    `/data/:index`,requireSignin,UserController.searchDataIndex
+    `/data/:index`,UserController.searchDataIndex
 )
 router.post(
-    `/search/:index`,requireSignin,UserController.searchMultiField
+    `/search/:index`,UserController.searchMultiField
+)
+router.post(
+    `/searchAllField/:index`,UserController.searchAllField
 )
 router.delete(
-    `/data/:index/:id`,requireSignin,UserController.deteleRecord
+    `/data/:index/:id`,UserController.deteleRecord
 )
 router.post(
     `/data/:index/ids`,requireSignin,UserController.deleteRecords

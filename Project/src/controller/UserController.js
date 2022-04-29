@@ -95,9 +95,17 @@ class UserController {
                     '\n'
             }
             const insert = await client.bulk({ body: data })
+            const response = await axios.put(
+                `${esUrl}_settings`,
+                {
+                    index: {
+                      max_result_window: 1000000
+                    }
+                  }
+            )
             const index = new Index({
                 userId: req.user._id,
-                nameIndex: req.body.indexname,
+                nameIndex: req.body.indexname.toLowerCase(),
             })
             index.save((error, indexs) => {
                 if (error) console.log(error)
@@ -206,11 +214,32 @@ class UserController {
             res.json(error)
         }
     }
+    searchAllField = async (req, res) => {
+        const query = {
+            query_string: {
+              query: "*" + req.body.input + "*",
+            },
+          };
+        try {
+            let response = await axios.post(
+                `${esUrl}${req.params.index}/_search?scroll=1h`,
+                {
+                    size: 10000,
+                    query: query
+                }
+            )
+            res.json(response.data)
+        } catch (error) {
+            res.json(error)
+        }
+    }
     deteleRecord = async (req, res) => {
+        console.log(req.params)
         try {
             const response = await axios.delete(
                 `${esUrl}${req.params.index}/_doc/${req.params.id}`
             )
+            console.log(response.data)
             res.json(response.data)
         } catch (error) {
             res.json(error)
@@ -231,12 +260,21 @@ class UserController {
     }
     deleteIndex = async (req, res) => {
         try {
+            
+                Index.deleteOne({nameIndex:req.params.index}).exec((error, result) => {
+                    if (error) return res.status(400).json({ error })
+                    console.log(result)
+                   
+                })
+            
             const response = await client.indices.delete({
                 index: req.params.index,
             })
+            console.log(response.data)
+           
             res.json(response)
         } catch (error) {
-            res.json(error)
+            res.json(error.data.error)
         }
     }
     getAllIndex = async (req, res) => {
@@ -260,10 +298,9 @@ class UserController {
             const allIndex = response.data.replace(/\n/g, ' ').split(' ')
             const temp = allIndex.filter((word) => word.length > 0)
             const result = CreateIndexJson(temp)
-            console.log(response.data)
             res.json(result)
         } catch (error) {
-            console.log(error)
+            console.log(error.response)
         }
     }
     nextPage = async (req, res) => {
@@ -276,4 +313,15 @@ class UserController {
         res.json(response)
     }
 }
+function pagination(items, page = 1, perPage = 8) {
+    const previousItem = (page - 1) * Number(perPage);
+    return {
+      result: {
+        items: items.slice(previousItem, previousItem + Number(perPage)),
+        totalPage: Math.ceil(items.length / Number(perPage)),
+        currentPage: page,
+        totalItem: items.length,
+      },
+    };
+  }
 module.exports = new UserController()

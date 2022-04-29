@@ -37,21 +37,35 @@ const EditIndexPage = (props) => {
     console.log(response);
   }
   async function SearchRecord() {
-    let response = await axios.post(`/api/data/${indexId}`, {
-      type: "multi-matching",
-      operator: "or",
-      size: size,
-      [searchby]: textSearchRecord,
-    });
-    console.log(response);
-    if (response.status === 200) {
-      setData(response.data.hits);
-      /* getDataTable(response.data.hits); */
-      setScrollId(response.data._scroll_id);
-      handleDataTable(response.data.hits.hits)
-
+    let response;
+    if(searchby !==""){
+      response = await axios.post(`/api/data/${indexId}`, {
+        type: "multi-matching",
+        operator: "or",
+        size: size,
+        [searchby]: textSearchRecord,
+      });
+      console.log(response);
+      if (response.status === 200) {
+        setData(response.data.hits);
+        /* getDataTable(response.data.hits); */
+        setScrollId(response.data._scroll_id);
+        handleDataTable(response.data.hits.hits)
+  
+      }
     }
+    else{
+      response= await axios.post(`/api/searchAllField/${indexId}`,{input:textSearchRecord})
+      console.log(response)
+      if (response.status === 200) {
+        setData(response.data.hits);
+        /* getDataTable(response.data.hits); */
+        setScrollId(response.data._scroll_id);
+        handleDataTable(response.data.hits.hits)
+  
+      }
   }
+}
   async function DeleteRecord() {
     console.log(idDeleteRecord)
     let response = await axios.delete(`/api/data/${indexId}/${idDeleteRecord}`);

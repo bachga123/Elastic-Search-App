@@ -45,12 +45,9 @@ const IndexPage = (props) => {
     setIndexs(response.data);
   } */
   const handleDeleteIndex = (e) => {
-    setNameDeleteIndex(e.target.value);
-    if (nameDeleteIndex === "") {
-      e.preventDefault();
-    } else {
-      dispatch(deleteIndex());
-    }
+
+      dispatch(deleteIndex(e.target.value));
+    
   };
 
   //Insert data to exists index
