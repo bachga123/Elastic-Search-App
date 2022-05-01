@@ -28,10 +28,10 @@ router.post(
     `/data/:index`,UserController.searchDataIndex
 )
 router.post(
-    `/search/:index`,UserController.searchMultiField
+    `/search/:index`,UserController.searchAllField
 )
 router.post(
-    `/searchavanced/:index`,UserController.searchAdvanced
+    `/searchadvanced/:index`,UserController.searchAdvanced
 )
 router.post(
     `/searchAllField/:index`,UserController.searchAllField
