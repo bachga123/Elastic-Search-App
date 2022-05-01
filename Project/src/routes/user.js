@@ -22,10 +22,16 @@ router.post(
     `/data`,requireSignin,upload.single('dataindex'),UserController.createIndexAndUpData
 )
 router.post(
+    `/data/update`,upload.single('dataindex'),UserController.updateData
+)
+router.post(
     `/data/:index`,UserController.searchDataIndex
 )
 router.post(
     `/search/:index`,UserController.searchMultiField
+)
+router.post(
+    `/searchavanced/:index`,UserController.searchAdvanced
 )
 router.post(
     `/searchAllField/:index`,UserController.searchAllField

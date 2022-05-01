@@ -117,6 +117,50 @@ class UserController {
             res.status(500).json(error)
         }
     }
+    updateData = async (req, res) => {
+        try {
+            const { filename } = req.file
+            const {indexname}=req.body
+            const sampleData = require(`../uploads/${filename}`)
+            let data = ''
+            for (let idx = 0; idx < sampleData.length; idx++) {
+                const checkExist= await axios.post(`${esUrl}${indexname}/_search`,{
+                    query: {match: {
+                        name: sampleData[idx].name
+                      }}
+                })
+                console.log(checkExist.data)
+                if(checkExist.data.hits.total.value===0){
+                    data =
+                    data +
+                    `{"index":{"_index":"${
+                        indexname
+                    }","_id" : "${shortid.generate()}"}}` +
+                    '\n'
+                data =data +converData(sampleData[idx])+'\n'
+
+                }
+                else{
+                    const id=checkExist.data.hits.hits[0]._id;
+                    data =
+                    data +
+                    `{"update":{"_id" : "${id}","_index":"${
+                        indexname
+                    }"}}` +
+                    '\n'
+                data =
+                    data +`{"doc":${converData(sampleData[idx])}}`+'\n'
+                }
+                
+            }
+            console.log(data)
+            const insert = await client.bulk({ body: data })
+            res.json(insert)
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(error)
+        }
+    }
     searchDataIndex = async (req, res) => {
         try {
             let response
@@ -233,6 +277,25 @@ class UserController {
             res.json(error)
         }
     }
+    searchAdvanced= async (req, res) => {
+        const {query} = req.body
+        try {
+            let response = await axios.post(
+                `${esUrl}${req.params.index}/_search?scroll=1h`,
+                {
+                    size: 10000,
+                    query: {
+                        simple_query_string:{
+                            query:query
+                        }
+                    }
+                }
+            )
+            res.json(response.data)
+        } catch (error) {
+            res.json(error)
+        }
+    }
     deteleRecord = async (req, res) => {
         console.log(req.params)
         try {
@@ -324,4 +387,9 @@ function pagination(items, page = 1, perPage = 8) {
       },
     };
   }
+
+function converData(data){
+    return JSON.stringify(data).replace('\n', '')
+                    
+}
 module.exports = new UserController()
