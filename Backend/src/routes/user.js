@@ -18,36 +18,46 @@ const upload = multer({ storage })
 /* router.post(
     '/create-index',requireSignin,UserController.createIndex
 ) */
+// tạo index và úp data
 router.post(
     `/index`,requireSignin,upload.single('dataindex'),UserController.createIndexAndUpData
 )
+// add thêm data 
 router.put(
     `/index`,upload.single('dataindex'),UserController.updateData
 )
+// get all data index
 router.get(
     `/datas/:index`,UserController.searchDataIndex
 )
 /* router.post(
     `/search/:index`,UserController.searchAllField
 ) */
+// search kết hợp với các phép toán
 router.post(
     `/searchadvanced/:index`,UserController.searchAdvanced
 )
+// search không cần nhập field
 router.post(
     `/searchs/:index`,UserController.searchAllField
 )
+/// delete record 
 router.delete(
     `/:index/:id`,UserController.deteleRecord
 )
+// delete nhiều record
 router.post(
     `/:index/ids`,requireSignin,UserController.deleteRecords
 )
+// xoá index
 router.delete(
     `/:index`,requireSignin,UserController.deleteIndex
 )
+// get all index
 router.get(
     `/indexs`,requireSignin,UserController.getAllIndex
 )
+// chia các record theo scroll 
 router.post(
     `/data/index/nextpage`,requireSignin,UserController.nextPage
 )
