@@ -15,32 +15,32 @@ const storage = multer.diskStorage({
     },
 })
 const upload = multer({ storage })
-router.post(
+/* router.post(
     '/create-index',requireSignin,UserController.createIndex
-)
+) */
 router.post(
-    `/data`,requireSignin,upload.single('dataindex'),UserController.createIndexAndUpData
+    `/index`,requireSignin,upload.single('dataindex'),UserController.createIndexAndUpData
 )
-router.post(
-    `/data/update`,upload.single('dataindex'),UserController.updateData
+router.put(
+    `/index`,upload.single('dataindex'),UserController.updateData
 )
-router.post(
-    `/data/:index`,UserController.searchDataIndex
+router.get(
+    `/datas/:index`,UserController.searchDataIndex
 )
-router.post(
+/* router.post(
     `/search/:index`,UserController.searchAllField
-)
+) */
 router.post(
     `/searchadvanced/:index`,UserController.searchAdvanced
 )
 router.post(
-    `/searchAllField/:index`,UserController.searchAllField
+    `/searchs/:index`,UserController.searchAllField
 )
 router.delete(
-    `/data/:index/:id`,UserController.deteleRecord
+    `/:index/:id`,UserController.deteleRecord
 )
 router.post(
-    `/data/:index/ids`,requireSignin,UserController.deleteRecords
+    `/:index/ids`,requireSignin,UserController.deleteRecords
 )
 router.delete(
     `/:index`,requireSignin,UserController.deleteIndex

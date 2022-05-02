@@ -25,7 +25,7 @@ exports.requireSignin = (req, res, next) => {
             req.user = user
             return next()
         }
-        return res.status(400).json({
+        return res.status(401).json({
             message: 'Authorization required',
         })
     } catch (error) {
@@ -36,7 +36,7 @@ exports.requireSignin = (req, res, next) => {
 }
 exports.userMiddleware = (req, res, next) => {
     if (req.user.role !== 'user') {
-        return res.status(400).json({
+        return res.status(401).json({
             message: 'User Access denied',
         })
     }
@@ -45,7 +45,7 @@ exports.userMiddleware = (req, res, next) => {
 
 exports.adminMiddleware = (req, res, next) => {
     if (req.user.role !== 'admin') {
-        return res.status(400).json({
+        return res.status(401).json({
             message: 'Admin Access denied',
         })
     }

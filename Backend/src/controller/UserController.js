@@ -95,14 +95,11 @@ class UserController {
                     '\n'
             }
             const insert = await client.bulk({ body: data })
-            const response = await axios.put(
-                `${esUrl}_settings`,
-                {
-                    index: {
-                      max_result_window: 1000000
-                    }
-                  }
-            )
+            const response = await axios.put(`${esUrl}_settings`, {
+                index: {
+                    max_result_window: 1000000,
+                },
+            })
             const index = new Index({
                 userId: req.user._id,
                 nameIndex: req.body.indexname.toLowerCase(),
@@ -110,7 +107,7 @@ class UserController {
             index.save((error, indexs) => {
                 if (error) console.log(error)
             })
-            res.json(insert)
+            res.status(201).json(insert)
             /*  res.json({"getalldata":`http://localhost:3000/data/${req.body.indexname}`,"delete":`http://localhost:3000/data/${req.body.indexname}/:id`,"query":`http://localhost:3000/data/${req.body.indexname}?type=matching&jobRole=Human&name=Kristy&country=Egypt`}); */
         } catch (error) {
             console.log(error)
@@ -119,43 +116,39 @@ class UserController {
     }
     updateData = async (req, res) => {
         try {
-            const { filename } = req.file
-            const {indexname}=req.body
+            const { filename } = req.file,
+                { indexname } = req.body
             const sampleData = require(`../uploads/${filename}`)
             let data = ''
             for (let idx = 0; idx < sampleData.length; idx++) {
-                const checkExist= await axios.post(`${esUrl}${indexname}/_search`,{
-                    query: {match: {
-                        name: sampleData[idx].name
-                      }}
-                })
-                console.log(checkExist.data)
-                if(checkExist.data.hits.total.value===0){
+                const checkExist = await axios.post(
+                    `${esUrl}${indexname}/_search`,
+                    {
+                        query: {
+                            match: {
+                                name: sampleData[idx].name,
+                            },
+                        },
+                    }
+                )
+                if (checkExist.data.hits.total.value === 0) {
                     data =
-                    data +
-                    `{"index":{"_index":"${
-                        indexname
-                    }","_id" : "${shortid.generate()}"}}` +
-                    '\n'
-                data =data +converData(sampleData[idx])+'\n'
-
-                }
-                else{
-                    const id=checkExist.data.hits.hits[0]._id;
+                        data +
+                        `{"index":{"_index":"${indexname}","_id" : "${shortid.generate()}"}}` +
+                        '\n'
+                    data = data + converData(sampleData[idx]) + '\n'
+                } else {
+                    const id = checkExist.data.hits.hits[0]._id
                     data =
-                    data +
-                    `{"update":{"_id" : "${id}","_index":"${
-                        indexname
-                    }"}}` +
-                    '\n'
-                data =
-                    data +`{"doc":${converData(sampleData[idx])}}`+'\n'
+                        data +
+                        `{"update":{"_id" : "${id}","_index":"${indexname}"}}` +
+                        '\n'
+                    data =
+                        data + `{"doc":${converData(sampleData[idx])}}` + '\n'
                 }
-                
             }
-            console.log(data)
             const insert = await client.bulk({ body: data })
-            res.json(insert)
+            res.status(200).json(insert)
         } catch (error) {
             console.log(error)
             res.status(500).json(error)
@@ -163,11 +156,11 @@ class UserController {
     }
     searchDataIndex = async (req, res) => {
         try {
-            let response
-            let match = {}
-            let query = []
-            let bool = {}
-            const { type, id, operator,size } = req.body
+            let response,
+                match = {},
+                query = [],
+                bool = {}
+            const { type, id, operator, size } = req.body
             delete match.type
             switch (type) {
                 case 'sorting':
@@ -203,7 +196,6 @@ class UserController {
                         query.push({ match: { [key]: req.body[key] } })
                     })
                     query = query.slice(3)
-                    console.log(query)
                     if (operator === 'and') {
                         Object.assign(bool, { must: query })
                     } else {
@@ -211,17 +203,15 @@ class UserController {
                     }
                     response = await axios.post(
                         `${esUrl}${req.params.index}/_search?scroll=10m`,
-
                         {
                             size: parseInt(size),
                             track_total_hits: true,
                             query: {
-                              bool: bool
+                                bool: bool,
                             },
-                          }
+                        }
                     )
-                    break
-
+                    break;
                 default:
                     response = await axios.post(
                         `${esUrl}${req.params.index}/_search?scroll=10m`,
@@ -236,7 +226,7 @@ class UserController {
                     break
             }
 
-            res.json(response.data)
+            res.status(200).json(response.data)
             /* res.json(response.data.hits.hits);  */
         } catch (error) {
             console.log(error)
@@ -253,7 +243,7 @@ class UserController {
                     },
                 }
             )
-            res.json(response.data)
+            res.status(200).json(response.data)
         } catch (error) {
             res.json(error)
         }
@@ -261,51 +251,49 @@ class UserController {
     searchAllField = async (req, res) => {
         const query = {
             query_string: {
-              query: "*" + req.body.input + "*",
+                query: '*' + req.body.input + '*',
             },
-          };
+        }
         try {
             let response = await axios.post(
                 `${esUrl}${req.params.index}/_search?scroll=1h`,
                 {
                     size: 10000,
-                    query: query
+                    query: query,
                 }
             )
-            res.json(response.data)
+            res.status(200).json(response.data)
         } catch (error) {
             res.json(error)
         }
     }
-    searchAdvanced= async (req, res) => {
-        const {query} = req.body
+    searchAdvanced = async (req, res) => {
+        const { query } = req.body
         try {
             let response = await axios.post(
                 `${esUrl}${req.params.index}/_search?scroll=1h`,
                 {
                     size: 10000,
                     query: {
-                        simple_query_string:{
-                            query:query
-                        }
-                    }
+                        simple_query_string: {
+                            query: query,
+                        },
+                    },
                 }
             )
-            res.json(response.data)
+            res.status(200).json(response.data)
         } catch (error) {
             res.json(error)
         }
     }
     deteleRecord = async (req, res) => {
-        console.log(req.params)
         try {
             const response = await axios.delete(
                 `${esUrl}${req.params.index}/_doc/${req.params.id}`
             )
-            console.log(response.data)
-            res.json(response.data)
+            res.status(204).json(response.data);
         } catch (error) {
-            res.json(error)
+            res.json(error);
         }
     }
     deleteRecords = async (req, res) => {
@@ -316,26 +304,24 @@ class UserController {
                     query: req.body,
                 }
             )
-            res.json(response.data)
+            res.status(204).json(response.data)
         } catch (error) {
             res.json(error)
         }
     }
     deleteIndex = async (req, res) => {
         try {
-            
-                Index.deleteOne({nameIndex:req.params.index}).exec((error, result) => {
+            Index.deleteOne({ nameIndex: req.params.index }).exec(
+                (error, result) => {
                     if (error) return res.status(400).json({ error })
                     console.log(result)
-                   
-                })
-            
+                }
+            )
+
             const response = await client.indices.delete({
                 index: req.params.index,
             })
-            console.log(response.data)
-           
-            res.json(response)
+            res.status(204).json(response)
         } catch (error) {
             res.json(error.data.error)
         }
@@ -349,9 +335,7 @@ class UserController {
             (item) =>
                 (listIndex = listIndex + item.nameIndex.toLowerCase() + ',')
         )
-        console.log(listIndex)
         if (listIndex === '') {
-            console.log('1')
             res.json([])
         }
         try {
@@ -372,24 +356,22 @@ class UserController {
             scroll_id: scroll_id,
             scroll: '1h',
         })
-        console.log(response)
         res.json(response)
     }
 }
 function pagination(items, page = 1, perPage = 8) {
-    const previousItem = (page - 1) * Number(perPage);
+    const previousItem = (page - 1) * Number(perPage)
     return {
-      result: {
-        items: items.slice(previousItem, previousItem + Number(perPage)),
-        totalPage: Math.ceil(items.length / Number(perPage)),
-        currentPage: page,
-        totalItem: items.length,
-      },
-    };
-  }
+        result: {
+            items: items.slice(previousItem, previousItem + Number(perPage)),
+            totalPage: Math.ceil(items.length / Number(perPage)),
+            currentPage: page,
+            totalItem: items.length,
+        },
+    }
+}
 
-function converData(data){
+function converData(data) {
     return JSON.stringify(data).replace('\n', '')
-                    
 }
 module.exports = new UserController()
