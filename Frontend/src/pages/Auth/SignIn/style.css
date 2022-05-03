@@ -10,7 +10,7 @@
 
 .form-title{
   font: 40px Arial;
-  width: 140px;
+  width: 200px;
   margin: 20px auto 50px;
   
 }
@@ -27,12 +27,12 @@
   border-radius: 30px;
   margin: 10px auto;
   width: 200px;
-  height: 50px;
+  height: 40px;
   display: flex;
   justify-content: center;
 }
 
 .p-signup{
   margin: 10px auto;
-  width: 300px;
+  width: 340px;
 }

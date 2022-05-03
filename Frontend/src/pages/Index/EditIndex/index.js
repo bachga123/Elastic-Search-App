@@ -29,7 +29,7 @@ const EditIndexPage = (props) => {
   const [idDeleteRecord, setIdDeleteRecord] = useState("");
   const [searchby, setSearchBy] = useState("");
   const [hidden, setHidden] = useState(false);
-  const [searchField, setSearchField] = useState([])
+  const [searchField, setSearchField] = useState([]);
   async function getData() {
     let response = await axios.post(`/api/data/${indexId}`, { size: size });
     setData(response.data.hits);
@@ -38,7 +38,7 @@ const EditIndexPage = (props) => {
   }
   async function SearchRecord() {
     let response;
-    if(searchby !==""){
+    if (searchby !== "") {
       response = await axios.post(`/api/data/${indexId}`, {
         type: "multi-matching",
         operator: "or",
@@ -50,24 +50,23 @@ const EditIndexPage = (props) => {
         setData(response.data.hits);
         /* getDataTable(response.data.hits); */
         setScrollId(response.data._scroll_id);
-        handleDataTable(response.data.hits.hits)
-  
+        handleDataTable(response.data.hits.hits);
       }
-    }
-    else{
-      response= await axios.post(`/api/searchAllField/${indexId}`,{input:textSearchRecord})
-      console.log(response)
+    } else {
+      response = await axios.post(`/api/searchAllField/${indexId}`, {
+        input: textSearchRecord,
+      });
+      console.log(response);
       if (response.status === 200) {
         setData(response.data.hits);
         /* getDataTable(response.data.hits); */
         setScrollId(response.data._scroll_id);
-        handleDataTable(response.data.hits.hits)
-  
+        handleDataTable(response.data.hits.hits);
       }
+    }
   }
-}
   async function DeleteRecord() {
-    console.log(idDeleteRecord)
+    console.log(idDeleteRecord);
     let response = await axios.delete(`/api/data/${indexId}/${idDeleteRecord}`);
     console.log(response);
     if (response.status === 200) {
@@ -90,11 +89,11 @@ const EditIndexPage = (props) => {
   async function getDataTable() {
     let response = await axios.post(`/api/data/${indexId}`, { size: 10000 });
     const data = response.data.hits;
-    console.log(data)
-    handleDataTable(data.hits)
+    console.log(data);
+    handleDataTable(data.hits);
   }
   const handleDataTable = (hits) => {
-    console.log(hits)
+    console.log(hits);
     const columnTable = [
       {
         label: "Id",
@@ -125,7 +124,7 @@ const EditIndexPage = (props) => {
       hits.map((value) => {
         const obj = Object.entries(value._source);
         const idField = ["idField", value._id];
-        obj.unshift(idField)
+        obj.unshift(idField);
         const objtemp = Object.fromEntries(obj);
         rowTable.push(objtemp);
       });
@@ -135,7 +134,7 @@ const EditIndexPage = (props) => {
       rows: rowTable,
     };
     setDataTable(dataTable);
-  }
+  };
   useEffect(() => {
     if (search === false) {
       getData();
@@ -147,7 +146,7 @@ const EditIndexPage = (props) => {
   const handleReloadRecord = () => {
     getData();
     getDataTable();
-  }
+  };
   const handleOnChangeOption = (e) => {
     if (e.target.value) {
       setSearchBy(e.target.value);
@@ -186,7 +185,7 @@ const EditIndexPage = (props) => {
     if (idDeleteRecord === "" || idDeleteRecord === undefined) {
       e.preventDefault();
     } else {
-      console.log(idDeleteRecord)
+      console.log(idDeleteRecord);
       DeleteRecord();
     }
   };
@@ -196,26 +195,28 @@ const EditIndexPage = (props) => {
       value: "",
       options: "",
     },
-  ]
+  ];
 
   const addSearchField = () => {
-    setSearchField(searchField => {
-      return [...searchField,
-      {
-        value: "",
-        options: ""
-      }]
-    })
-  }
-  const handleRemoveSearchField = index => {
+    setSearchField((searchField) => {
+      return [
+        ...searchField,
+        {
+          value: "",
+          options: "",
+        },
+      ];
+    });
+  };
+  const handleRemoveSearchField = (index) => {
     const list = [...searchField];
     list.splice(index, 1);
     setSearchField(list);
-  }
+  };
   const handleAddSearchField = (e) => {
     addSearchField();
-    console.log(searchField)
-  }
+    console.log(searchField);
+  };
 
   return (
     <>
@@ -254,21 +255,22 @@ const EditIndexPage = (props) => {
             >
               <div style={{ display: "auto" }}>
                 <div className="mt-5 w-100">
-                  <h4 className="font-weight-bold mb-3">Danh sách các field trong index</h4>
+                  <h2 className="font-weight-bold mb-3">Tìm kiếm</h2>
                 </div>
                 <div>
-
                   <div style={{ display: "flex", margin: "10px" }}>
-
                     <Form.Control
                       type="text"
                       value={textSearchRecord}
+                      placeholder="Tìm kiếm cơ bản"
                       onChange={(e) => setTextSearchRecord(e.target.value)}
                       required
                       style={{ width: "20%", height: "40px" }}
                     />
 
-                    <select
+                    {/* Bỏ */}
+                    {/* danh sách field */}
+                    {/* <select
                       aria-label="Default select example"
                       style={{
                         height: "40px",
@@ -285,8 +287,10 @@ const EditIndexPage = (props) => {
                           </option>
                         ))
                         : null}
-                    </select>
-                    <select
+                    </select> */}
+
+                    {/* Bỏ */}
+                    {/* <select
                       aria-label="Default select example"
                       style={{
                         height: "40px",
@@ -297,55 +301,65 @@ const EditIndexPage = (props) => {
                       <option>Type</option>
                       <option>And</option>
                       <option>OR</option>
+                    </select> */}
 
-                    </select>
-                    <Button className="button_index" onClick={handleSearchRecord}>
+                    <Button
+                      className="button_index"
+                      onClick={handleSearchRecord}
+                    >
                       Tìm bản ghi
                     </Button>
-
-                    <Button className="reload_button" onClick={handleReloadRecord} style={{ margin: "0 4px" }}>
+                    {/* 
+                    <Button
+                      className="reload_button"
+                      onClick={handleReloadRecord}
+                      style={{ margin: "0 4px" }}
+                    >
                       Tải lại trang
-                    </Button>
-                    <Button onClick={handleAddSearchField}>
-                      +
-                    </Button>
+                    </Button> */}
 
+                    {/* Bỏ */}
+                    {/* <Button onClick={handleAddSearchField}>+</Button> */}
                   </div>
-                  {searchField !== null ? (searchField.map((value) => (
-                    <div style={{ display: "flex", margin: "10px" }}>
 
-                      <Form.Control
-                        type="text"
-                        required
-                        style={{ width: "20%", height: "40px" }}
-                      />
+                  {/* Xử lý search cơ bản */}
+                  {searchField !== null
+                    ? searchField.map((value) => (
+                        <div style={{ display: "flex", margin: "10px" }}>
+                          <Form.Control
+                            type="text"
+                            required
+                            style={{ width: "20%", height: "40px" }}
+                          />
 
-                      <select
-                        aria-label="Default select example"
-                        style={{
-                          height: "40px",
-                          marginLeft: "10px",
-                          width: "170px",
-                        }}
-                        onChange={handleOnChangeOption}
-                      >
-                        <option>Tìm theo</option>
-                        {data.hits != undefined
-                          ? Object.keys(data.hits[0]._source).map((key) => (
-                            <option key={key} value={key}>
-                              {jsUcfirst(key)}
-                            </option>
-                          ))
-                          : null}
-                      </select>
-                      <Button style={{ margin: "0 10px" }} onClick={() => handleRemoveSearchField(value)}>-</Button>
-                    </div>
-                  ))) : null
-                  }
-
+                          <select
+                            aria-label="Default select example"
+                            style={{
+                              height: "40px",
+                              marginLeft: "10px",
+                              width: "170px",
+                            }}
+                            onChange={handleOnChangeOption}
+                          >
+                            <option>Tìm theo</option>
+                            {data.hits != undefined
+                              ? Object.keys(data.hits[0]._source).map((key) => (
+                                  <option key={key} value={key}>
+                                    {jsUcfirst(key)}
+                                  </option>
+                                ))
+                              : null}
+                          </select>
+                          <Button
+                            style={{ margin: "0 10px" }}
+                            onClick={() => handleRemoveSearchField(value)}
+                          >
+                            -
+                          </Button>
+                        </div>
+                      ))
+                    : null}
                 </div>
-
-
 
                 <div style={{ display: "flex", margin: "10px" }}>
                   <>
@@ -353,16 +367,21 @@ const EditIndexPage = (props) => {
                       type="text"
                       value={idDeleteRecord}
                       onChange={(e) => setIdDeleteRecord(e.target.value)}
-                      placeholder="ID bản ghi"
+                      placeholder="Tìm kiếm nâng cao"
                       required
                       style={{ width: "50%" }}
                     />
                     <br />
                   </>
                   <Button className="button_index" onClick={handleDeleteRecord}>
-                    Xoá bản ghi
+                    Tìm kiếm bản ghi
                   </Button>
                 </div>
+                <h5>Quy ước tìm kiếm nâng cao</h5>
+                <p>
+                  + : and
+                  <br />| : or
+                </p>
               </div>
               {/* co length moi render */}
               <div
@@ -370,7 +389,7 @@ const EditIndexPage = (props) => {
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
                 {data.hits !== undefined ? (
-                  <h4>Tổng cộng có {data.total.value} bản ghi</h4>
+                  <h3>Tổng cộng có {data.total.value} bản ghi</h3>
                 ) : null}
                 {/* <div
                   className="container_button_pagination"
@@ -425,23 +444,22 @@ const EditIndexPage = (props) => {
                   ) : null}
                 </CDBTableBody>
               </CDBTable> */}
-              <CDBCard style={{ width: "fit-content" }}>
-                <CDBCardBody>
-                  <CDBDataTable
-                    striped
-                    bordered
-                    hover
-                    responsiveXL
-                    checkbox
-                    fixed
-                    entriesOptions={[10, 50, 100]}
-                    entries={10}
-                    pagesAmount={4}
-                    data={dataTable}
-                    materialSearch={true}
-                  />
-                </CDBCardBody>
-              </CDBCard>
+              {/* <CDBCard style={{ width: "fit-content" }}> */}
+              <CDBCardBody response>
+                <CDBDataTable
+                  striped
+                  bordered
+                  hover
+                  responsiveXL
+                  checkbox
+                  entriesOptions={[10, 50, 100]}
+                  entries={10}
+                  pagesAmount={4}
+                  data={dataTable}
+                  searching={false}
+                />
+              </CDBCardBody>
+              {/* </CDBCard> */}
             </div>
           </div>
         </div>

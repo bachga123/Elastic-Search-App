@@ -11,7 +11,7 @@ import {
   CDBTableBody,
   CDBTableHeader,
 } from "cdbreact";
-import FileItem from './index_file'
+import FileItem from "../CreateIndexPage/component/FileItem";
 import { Link, useNavigate } from "react-router-dom";
 import { CDBBreadcrumb } from "cdbreact";
 import "./style.css";
@@ -45,9 +45,7 @@ const IndexPage = (props) => {
     setIndexs(response.data);
   } */
   const handleDeleteIndex = (e) => {
-
-      dispatch(deleteIndex(e.target.value));
-    
+    dispatch(deleteIndex(e.target.value));
   };
 
   //Insert data to exists index
@@ -82,23 +80,21 @@ const IndexPage = (props) => {
     }
   };
 
-  const handleShow=()=>{
-    setShow(true)
-  }
-  const showModal=()=>{
-
-  }
-  const handleClose=()=>{
-    setShow(false)
-  }
+  const handleShow = () => {
+    setShow(true);
+  };
+  const showModal = () => {};
+  const handleClose = () => {
+    setShow(false);
+  };
   return (
     <>
       <CDBBreadcrumb>
         <a className="breadcrumb-item" href="/">
-          Home
+          Trang chủ
         </a>
         <a className="breadcrumb-item active" href="/indexs">
-          Index List
+          Danh sách Index
         </a>
       </CDBBreadcrumb>
       <div
@@ -125,29 +121,30 @@ const IndexPage = (props) => {
               }}
             >
               <div className="mt-5 w-100">
-                <h1 className="font-weight-bold mb-3">Index List</h1>
+                <h1 className="font-weight-bold mb-3">Danh sách index</h1>
                 <a
                   color="secondary"
                   className=" btn-create-index"
                   href="/create-index"
                   style={{ height: "35px", boxSizing: "content-box" }}
                 >
-                  Add index
+                  Tạo index
                 </a>
               </div>
               <CDBTable
                 responsive={true}
                 striped={true}
                 className="table-index"
+                bordered
               >
                 <CDBTableHeader>
                   <tr>
                     <th>Id</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Docs count</th>
-                    <th>Store size</th>
-                    <th>Action</th>
+                    <th>Tên</th>
+                    <th>Trạng thái</th>
+                    <th>Số lượng doc</th>
+                    <th>Kích thước</th>
+                    <th>Hành động</th>
                   </tr>
                 </CDBTableHeader>
                 <CDBTableBody>
@@ -167,7 +164,7 @@ const IndexPage = (props) => {
                               className="btn-primary"
                               onClick={handleShow}
                             >
-                              Add Data
+                              Thêm data
                             </Button>
                             <Button
                               className="btn-danger"
@@ -177,7 +174,7 @@ const IndexPage = (props) => {
                               }}
                               value={index}
                             >
-                              Remove
+                              Xóa
                             </Button>
                           </td>
                         </tr>
@@ -197,12 +194,12 @@ const IndexPage = (props) => {
       </div>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header>
-          <Modal.Title onClick={()=>setShow(true)}>Add data to index</Modal.Title>
+          <Modal.Title onClick={() => setShow(true)}>Thêm data</Modal.Title>
         </Modal.Header>
-        <Modal.Body >
-          {/* <div>
-            <label for="file-upload" className="custom-file-upload">
-              <i className="bi bi-file-earmark-diff icon-file-plus"></i>
+        <Modal.Body>
+          <div style={{ height: "350px", width: "500px" }}>
+            <label for="file-upload" className="custom-file-upload2 ">
+              <i className="bi bi-file-earmark-diff icon-file-plus2"></i>
               <p>JSON File</p>
             </label>
             <input
@@ -211,46 +208,16 @@ const IndexPage = (props) => {
               onChange={handleUploadFile}
               style={{ width: "80px" }}
             />
-
-
-          <Button
-            onClick={handleCreateIndex}
-            className="bt-submit"
-            disabled={isLoading}
-          >
-            Tạo
-          </Button>
-        </div> */}
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>
-                <i className="bi bi-file-earmark-diff icon-file-plus"></i>
-                <p>JSON File</p>
-              </Form.Label>
-
-
-              <FormFileInput
-                id="file-upload"
-                type="file"
-                onChange={handleUploadFile}
-                style={{ width: "80px" }}>
-
-              </FormFileInput>
-              <FileItem name={fileData.name}></FileItem>
-            </Form.Group>
-
-
-
-          </Form>
+            <FileItem name={fileData.name} />
+          </div>
         </Modal.Body>
-
 
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Đóng
           </Button>
           <Button variant="primary" onClick={handleClose}>
-            Save Changes
+            Lưu
           </Button>
         </Modal.Footer>
       </Modal>

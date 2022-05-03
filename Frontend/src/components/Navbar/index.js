@@ -52,19 +52,19 @@ const Navbar = () => {
             {token ? (
               <li>
                 <Link className="dropdown-item" to="/" onClick={handleLogout}>
-                  Logout
+                  Đăng xuất
                 </Link>
               </li>
             ) : (
               <>
                 <li>
                   <Link className="dropdown-item" to="/sign-in">
-                    Sign-in
+                    Đăng nhập
                   </Link>
                 </li>
                 <li>
                   <Link className="dropdown-item" to="/sign-up">
-                    Sign-up
+                    Đăng ký
                   </Link>
                 </li>
               </>

@@ -66,6 +66,20 @@
     background-color: #F7F7F9;
 }
 
+.custom-file-upload2 {
+    border: 2px dashed #ccc;
+    cursor: pointer;
+    width: 350px;
+    height: 180px;
+    margin: 0;
+    background-color: #F7F7F9;
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
 .custom-file-upload p,.icon-file-plus{
     position: absolute;
     left: 50%;
@@ -73,11 +87,25 @@
     transform: translate(-50%, -50%);
 }
 
+
+.custom-file-upload2 p,.icon-file-plus2{
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+
+}
+
 .custom-file-upload p{
     top: 80%;
 }
 
 .icon-file-plus{
+    top: 40%;
+    font-size: 80px;
+}
+.icon-file-plus2{
     top: 40%;
     font-size: 80px;
 }

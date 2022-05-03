@@ -27,20 +27,24 @@ const Sidebar = () => {
             className="text-decoration-none"
             style={{ color: "inherit" }}
           >
-            Contrast
+            Flatform
           </a>
         </CDBSidebarHeader>
 
         <CDBSidebarContent className="sidebar-content">
           <CDBSidebarMenu>
             <NavLink exact to="/" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="columns">dashboard</CDBSidebarMenuItem>
+              <CDBSidebarMenuItem icon="columns">Trang chủ</CDBSidebarMenuItem>
             </NavLink>
-            <NavLink exact to={`${auth.authenticate?"/indexs":"/sign-in"}`} activeClassName="activeClicked">
+            <NavLink
+              exact
+              to={`${auth.authenticate ? "/indexs" : "/sign-in"}`}
+              activeClassName="activeClicked"
+            >
               <CDBSidebarMenuItem icon="table">Indexs</CDBSidebarMenuItem>
             </NavLink>
             <NavLink exact to="/profile" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="user">profile</CDBSidebarMenuItem>
+              <CDBSidebarMenuItem icon="user">Người dùng</CDBSidebarMenuItem>
             </NavLink>
             <NavLink
               exact

@@ -54,16 +54,16 @@ export const CreateIndexPage = (props) => {
     <>
       <CDBBreadcrumb>
         <a className="breadcrumb-item" href="/">
-          Home
+          Trang chủ
         </a>
         <a className="breadcrumb-item" href="/indexs">
-          Index List
+          Danh sách index
         </a>
-        <li className="breadcrumb-item active">Edit Index</li>
+        <li className="breadcrumb-item active">Chỉnh sửa Index</li>
       </CDBBreadcrumb>
 
       <div className="container_index">
-        <h4 className="header_indexs">Create Index</h4>
+        <h4 className="header_indexs">Tạo index</h4>
 
         <label for="file-upload" className="custom-file-upload">
           <i className="bi bi-file-earmark-diff icon-file-plus"></i>
