@@ -15,6 +15,7 @@ import {
   CDBDataTable,
 } from "cdbreact";
 import { CDBBreadcrumb } from "cdbreact";
+import AlertCT from "../../../components/AlertCT";
 
 const EditIndexPage = (props) => {
   const navigate = useNavigate();
@@ -26,12 +27,13 @@ const EditIndexPage = (props) => {
   const [scroll_id, setScrollId] = useState("");
   const { indexId } = params;
   const [textSearchRecord, setTextSearchRecord] = useState("");
+  const [inputSearchAvanced, setInputSearchAvanced] = useState("");
   const [idDeleteRecord, setIdDeleteRecord] = useState("");
   const [searchby, setSearchBy] = useState("");
   const [hidden, setHidden] = useState(false);
   const [searchField, setSearchField] = useState([]);
   async function getData() {
-    let response = await axios.post(`/api/data/${indexId}`, { size: size });
+    let response = await axios.post(`/api/datas/${indexId}`, { size: size });
     setData(response.data.hits);
     setScrollId(response.data._scroll_id);
     console.log(response);
@@ -39,7 +41,7 @@ const EditIndexPage = (props) => {
   async function SearchRecord() {
     let response;
     if (searchby !== "") {
-      response = await axios.post(`/api/data/${indexId}`, {
+      response = await axios.post(`/api/searchs/${indexId}`, {
         type: "multi-matching",
         operator: "or",
         size: size,
@@ -53,7 +55,7 @@ const EditIndexPage = (props) => {
         handleDataTable(response.data.hits.hits);
       }
     } else {
-      response = await axios.post(`/api/searchAllField/${indexId}`, {
+      response = await axios.post(`/api/searchs/${indexId}`, {
         input: textSearchRecord,
       });
       console.log(response);
@@ -65,6 +67,19 @@ const EditIndexPage = (props) => {
       }
     }
   }
+  async function SearchAvancedRecord() {
+      const response = await axios.post(`/api/searchadvanced/${indexId}`, {
+        query: inputSearchAvanced,
+      });
+      if (response.status === 200) {
+        setData(response.data.hits);
+        /* getDataTable(response.data.hits); */
+        setScrollId(response.data._scroll_id);
+        handleDataTable(response.data.hits.hits);
+      }
+    }
+  
+
   async function DeleteRecord() {
     console.log(idDeleteRecord);
     let response = await axios.delete(`/api/data/${indexId}/${idDeleteRecord}`);
@@ -77,7 +92,7 @@ const EditIndexPage = (props) => {
     }
   }
   async function DeleteRecordId(id) {
-    let response = await axios.delete(`/api/data/${indexId}/${id}`);
+    let response = await axios.delete(`/api/${indexId}/${id}`);
     console.log(response);
     if (response.status === 200) {
       alert("xoá thành công");
@@ -87,13 +102,11 @@ const EditIndexPage = (props) => {
     }
   }
   async function getDataTable() {
-    let response = await axios.post(`/api/data/${indexId}`, { size: 10000 });
+    let response = await axios.get(`/api/datas/${indexId}`);
     const data = response.data.hits;
-    console.log(data);
     handleDataTable(data.hits);
   }
   const handleDataTable = (hits) => {
-    console.log(hits);
     const columnTable = [
       {
         label: "Id",
@@ -189,7 +202,13 @@ const EditIndexPage = (props) => {
       DeleteRecord();
     }
   };
-
+  const handleSearchAvanced=(e)=>{
+    if(inputSearchAvanced===""){
+      e.preventDefault();
+    }else{
+      SearchAvancedRecord();
+    }
+  }
   const listSearchField = [
     {
       value: "",
@@ -253,9 +272,9 @@ const EditIndexPage = (props) => {
                 width: "1800px",
               }}
             >
-              <div style={{ display: "auto" }}>
+              <div style={{ display: "auto",margin:"0 15px" }}>
                 <div className="mt-5 w-100">
-                  <h2 className="font-weight-bold mb-3">Tìm kiếm</h2>
+                  <h2 className="font-weight-bold mb-3" style={{margin:"0 5px"}}>Tìm kiếm</h2>
                 </div>
                 <div>
                   <div style={{ display: "flex", margin: "10px" }}>
@@ -365,28 +384,24 @@ const EditIndexPage = (props) => {
                   <>
                     <Form.Control
                       type="text"
-                      value={idDeleteRecord}
-                      onChange={(e) => setIdDeleteRecord(e.target.value)}
+                      value={inputSearchAvanced}
+                      onChange={(e) => setInputSearchAvanced(e.target.value)}
                       placeholder="Tìm kiếm nâng cao"
                       required
                       style={{ width: "50%" }}
                     />
                     <br />
                   </>
-                  <Button className="button_index" onClick={handleDeleteRecord}>
+                  <Button className="button_index" onClick={handleSearchAvanced}>
                     Tìm kiếm bản ghi
                   </Button>
                 </div>
-                <h5>Quy ước tìm kiếm nâng cao</h5>
-                <p>
-                  + : and
-                  <br />| : or
-                </p>
+                <h5 style={{margin:"10px 10px",fontWeight:"bold"}}>Quy ước tìm kiếm nâng cao &emsp; + : and    &emsp; || &emsp;    | : or</h5>
               </div>
               {/* co length moi render */}
               <div
                 className="container_headertable"
-                style={{ display: "flex", justifyContent: "space-between" }}
+                style={{ display: "flex", justifyContent: "space-between",margin:"0 20px" }}
               >
                 {data.hits !== undefined ? (
                   <h3>Tổng cộng có {data.total.value} bản ghi</h3>

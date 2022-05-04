@@ -22,6 +22,7 @@ import FormFileInput from "react-bootstrap/esm/FormFileInput";
 const IndexPage = (props) => {
   const navigate = useNavigate();
   const [indexs, setIndexs] = useState([]);
+  const [indexUpdate, setIndexUpdate] = useState("");
   const [show, setShow] = useState(false);
   const [fileData, setFileData] = useState("");
   const [indexName, setIndexName] = useState("");
@@ -33,7 +34,7 @@ const IndexPage = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getIndex());
-  }, [auth.authenticate]);
+  }, [auth.authenticate,]);
 
   useEffect(() => {
     if (!token) {
@@ -52,7 +53,7 @@ const IndexPage = (props) => {
   const handleUploadFile = (e) => {
     setFileData(e.target.files[0]);
   };
-  const handleCreateIndex = (e) => {
+  const handleUpdateIndex = (e) => {
     setIsLoading(true);
     if (indexName === "" || fileData === "") {
       e.preventDefault();
@@ -61,18 +62,14 @@ const IndexPage = (props) => {
         const form = new FormData();
         form.append("indexname", indexName);
         form.append("dataindex", fileData);
-        console.log(fileData);
         try {
-          let response = await axios.post("/data", form);
-
-          console.log(response);
-          if (response.status === 200) {
-            navigate("/indexs");
+          let response = await axios.put("/api/index", form);
+          if(response.status===200){
+            dispatch(getIndex())
           }
           setIsLoading(false);
+          setShow(false)
         } catch (err) {
-          console.log(2);
-          console.log(form);
           console.log(err);
         }
       }
@@ -80,8 +77,10 @@ const IndexPage = (props) => {
     }
   };
 
-  const handleShow = () => {
+  const handleShow = (index) => {
     setShow(true);
+    setIndexName(index);
+    console.log(index)
   };
   const showModal = () => {};
   const handleClose = () => {
@@ -162,7 +161,8 @@ const IndexPage = (props) => {
                           <td>
                             <Button
                               className="btn-primary"
-                              onClick={handleShow}
+                              onClick={()=>handleShow(index)}
+                              style={{margin:"0 5px"}}
                             >
                               Thêm data
                             </Button>
@@ -208,7 +208,7 @@ const IndexPage = (props) => {
               onChange={handleUploadFile}
               style={{ width: "80px" }}
             />
-            <FileItem name={fileData.name} />
+            <FileItem name={fileData.name}/>
           </div>
         </Modal.Body>
 
@@ -216,7 +216,7 @@ const IndexPage = (props) => {
           <Button variant="secondary" onClick={handleClose}>
             Đóng
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={handleUpdateIndex}>
             Lưu
           </Button>
         </Modal.Footer>

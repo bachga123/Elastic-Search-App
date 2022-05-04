@@ -8,6 +8,7 @@ import FileItem from "./component/FileItem";
 import "./style.css";
 import { CDBBreadcrumb } from "cdbreact";
 import { Spinner } from "react-bootstrap";
+import AlertCT from "../../../components/AlertCT";
 
 const CreateIndexPage = (props) => {
   const navigate = useNavigate();
@@ -34,8 +35,8 @@ const CreateIndexPage = (props) => {
         form.append("dataindex", fileData);
         console.log(fileData);
         try {
-          let response = await axios.post("/api/data", form);
-          if (response.status === 200) {
+          let response = await axios.post("/api/index", form);
+          if (response.status === 201) {
             navigate("/indexs");
           }
           setIsLoading(false);

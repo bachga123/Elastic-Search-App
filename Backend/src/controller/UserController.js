@@ -131,13 +131,13 @@ class UserController {
                         },
                     }
                 )
-                if (checkExist.data.hits.total.value === 0) {
+                if (checkExist.data.hits.total.value === 0) { // nếu tên người dùng chưa có thì sẽ insert
                     data =
                         data +
                         `{"index":{"_index":"${indexname}","_id" : "${shortid.generate()}"}}` +
                         '\n'
                     data = data + converData(sampleData[idx]) + '\n'
-                } else {
+                } else { // nếu có thì sẽ update
                     const id = checkExist.data.hits.hits[0]._id
                     data =
                         data +
@@ -159,8 +159,8 @@ class UserController {
             let response,
                 match = {},
                 query = [],
-                bool = {}
-            const { type, id, operator, size } = req.body
+                bool = {},size=10000
+            const { type, id, operator } = req.body
             delete match.type
             switch (type) {
                 case 'sorting':

@@ -8,6 +8,7 @@ import FileItem from "./component/FileItem";
 import "./style.css";
 import { CDBBreadcrumb } from "cdbreact";
 import { Spinner } from "react-bootstrap";
+import AlertCT from "../../components/AlertCT";
 
 export const CreateIndexPage = (props) => {
   const navigate = useNavigate();
@@ -42,8 +43,6 @@ export const CreateIndexPage = (props) => {
           }
           setIsLoading(false);
         } catch (err) {
-          console.log(2);
-          console.log(form);
           console.log(err);
         }
       }

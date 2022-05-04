@@ -9,6 +9,7 @@ import axios from "../../../helper/axios";
 import { authConstants } from "../../../action/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../../action/auth";
+import AlertCT from "../../../components/AlertCT";
 
 function SignIn(props) {
   const [email, setEmail] = useState("");
@@ -26,12 +27,14 @@ function SignIn(props) {
   };
   useEffect(() => {
     if (auth.authenticate) {
-      navigate("/");
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     }
   }, [dispatch, auth.authenticate]);
 
   return (
-    <>
+    <>{auth.authenticate===true?<AlertCT variant='success' titleAlert="Đăng nhập thành công" contentAlert="Bạn đã đăng nhập thành công. Vui lòng chờ trong giây lát." />:null}
       <div className="form-auth">
         <h1 className="form-title">Đăng nhập</h1>
         <Form className="my-4">

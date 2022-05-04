@@ -40,7 +40,7 @@ export const deleteIndex = (indexName) => {
        try{
         dispatch({ type: userConstants.USER_DELETEINDEX_REQUEST })
         const res = await axios.delete(`/api/${indexName}`)
-        if (res.status === 200) {
+        if (res.status === 204) {
             dispatch(getIndex())
         }
     }

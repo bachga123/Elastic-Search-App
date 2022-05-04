@@ -8,6 +8,7 @@ import Form from "react-bootstrap/Form";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AlertCT from "../../../components/AlertCT";
 // import { AuthContext } from "../../contexts/AuthContext";
 // import AlertMessage from "../layout/AlertMessage";
 
@@ -30,6 +31,7 @@ function SignUp(props) {
     }
   };
   if (auth.authenticate) {
+    <AlertCT variant='success' titleAlert="Đăng ký thành công" contentAlert="Bạn đã đăng ký thành công. Vui lòng chờ trong giây lát." />
     navigate("/");
   }
 
