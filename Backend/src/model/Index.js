@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema(
             required: true,
             unique: true,
         },
+        keyUnique:{
+            type: String,
+            required: true,
+        }
     },
     { collection: 'Index' },
     { timestamps: true }

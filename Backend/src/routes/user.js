@@ -24,7 +24,7 @@ router.post(
 )
 // add thêm data 
 router.put(
-    `/index`,upload.single('dataindex'),UserController.updateData
+    `/index`,requireSignin,upload.single('dataindex'),UserController.updateData
 )
 // get all data index
 router.get(

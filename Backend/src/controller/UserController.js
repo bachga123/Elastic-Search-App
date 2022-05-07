@@ -5,6 +5,7 @@ const esUrl = `https://${process.env.USER_NAME}:${process.env.PASSWORD}@${proces
 const shortid = require('shortid')
 const client = require('../config/connect')
 const Index = require('../model/Index')
+const User=require('../model/User')
 var fs = require('fs')
 const e = require('method-override')
 const { CreateIndexJson } = require('../util/indexToJson')
@@ -79,7 +80,13 @@ class UserController {
     createIndexAndUpData = async (req, res) => {
         try {
             const { filename } = req.file
-
+            const {indexname,key }=req.body;
+           Index.findOne({userId: req.user._id,nameIndex:indexname}).exec(async(error, user)=>{
+            if(user){
+                return res.status(400).json({
+                    error: 'index already exits',
+                })
+            }
             const sampleData = require(`../uploads/${filename}`)
             let data = ''
             for (let idx = 0; idx < sampleData.length; idx++) {
@@ -102,12 +109,14 @@ class UserController {
             })
             const index = new Index({
                 userId: req.user._id,
-                nameIndex: req.body.indexname.toLowerCase(),
+                nameIndex: indexname.toLowerCase(),
+                keyUnique:key
             })
             index.save((error, indexs) => {
                 if (error) console.log(error)
             })
             res.status(201).json(insert)
+           })
             /*  res.json({"getalldata":`http://localhost:3000/data/${req.body.indexname}`,"delete":`http://localhost:3000/data/${req.body.indexname}/:id`,"query":`http://localhost:3000/data/${req.body.indexname}?type=matching&jobRole=Human&name=Kristy&country=Egypt`}); */
         } catch (error) {
             console.log(error)
@@ -116,39 +125,49 @@ class UserController {
     }
     updateData = async (req, res) => {
         try {
-            const { filename } = req.file,
-                { indexname } = req.body
+            
+            const { filename } = req.file, { indexname } = req.body
             const sampleData = require(`../uploads/${filename}`)
             let data = ''
-            for (let idx = 0; idx < sampleData.length; idx++) {
-                const checkExist = await axios.post(
-                    `${esUrl}${indexname}/_search`,
-                    {
-                        query: {
-                            match: {
-                                name: sampleData[idx].name,
+            Index.findOne({ userId: req.user._id,nameIndex:indexname }).exec(async (error, user) => { //check key unique
+                console.log(user);
+                const {keyUnique}=user;
+                console.log(sampleData[0][keyUnique])
+                for (let idx = 0; idx < sampleData.length; idx++) {
+                    const checkExist = await axios.post(
+                        `${esUrl}${indexname}/_search`,
+                        {
+                            query: {
+                                match: {
+                                    [keyUnique]:{
+                                        query: `${sampleData[idx][keyUnique]}`,
+                                        operator: "and"
+                                    }
+                                },
                             },
-                        },
+                        }
+                    )
+                    console.log(checkExist.data)
+                    if (checkExist.data.hits.total.value === 0) { // nếu tên người dùng chưa có thì sẽ insert
+                        data =
+                            data +
+                            `{"index":{"_index":"${indexname}","_id" : "${shortid.generate()}"}}` +
+                            '\n'
+                        data = data + converData(sampleData[idx]) + '\n'
+                    } else { // nếu có thì sẽ update
+                        const id = checkExist.data.hits.hits[0]._id
+                        data =
+                            data +
+                            `{"update":{"_id" : "${id}","_index":"${indexname}"}}` +
+                            '\n'
+                        data =
+                            data + `{"doc":${converData(sampleData[idx])}}` + '\n'
                     }
-                )
-                if (checkExist.data.hits.total.value === 0) { // nếu tên người dùng chưa có thì sẽ insert
-                    data =
-                        data +
-                        `{"index":{"_index":"${indexname}","_id" : "${shortid.generate()}"}}` +
-                        '\n'
-                    data = data + converData(sampleData[idx]) + '\n'
-                } else { // nếu có thì sẽ update
-                    const id = checkExist.data.hits.hits[0]._id
-                    data =
-                        data +
-                        `{"update":{"_id" : "${id}","_index":"${indexname}"}}` +
-                        '\n'
-                    data =
-                        data + `{"doc":${converData(sampleData[idx])}}` + '\n'
                 }
-            }
-            const insert = await client.bulk({ body: data })
-            res.status(200).json(insert)
+                const insert = await client.bulk({ body: data })
+                res.status(200).json(insert)
+            })
+            
         } catch (error) {
             console.log(error)
             res.status(500).json(error)
@@ -323,7 +342,7 @@ class UserController {
             })
             res.status(204).json(response)
         } catch (error) {
-            res.json(error.data.error)
+            res.json(error.data)
         }
     }
     getAllIndex = async (req, res) => {
