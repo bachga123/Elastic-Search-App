@@ -14,7 +14,6 @@ import {
 import { Bar, Line } from "react-chartjs-2";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
-import swaggerJson from "../../swagger.json";
 const token = localStorage.getItem("token");
 
 ChartJS.register(
