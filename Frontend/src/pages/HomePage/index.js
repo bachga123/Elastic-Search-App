@@ -12,6 +12,10 @@ import {
   LineElement,
 } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
+import SwaggerUI from "swagger-ui-react";
+import "swagger-ui-react/swagger-ui.css";
+import swaggerJson from "../../swagger.json";
+const token = localStorage.getItem("token");
 
 ChartJS.register(
   LinearScale,
@@ -100,14 +104,113 @@ const data2 = {
   ],
 };
 
+const swaggerConfig = {
+  swagger: "2.0",
+  host: "localhost:3000/",
+  basePath: "api",
+  schemes: ["https", "http"],
+  paths: {
+    "/index": {
+      post: {
+        tags: ["Index"],
+        summary: "Tạo mới index",
+        description: "",
+        operationId: "createIndex",
+        consumes: ["multipart/form-data"],
+        produces: ["application/json"],
+        parameters: [
+          {
+            name: "indexname",
+            in: "formData",
+            description: "Tên index",
+            required: true,
+            type: "string",
+          },
+          {
+            name: "dataindex",
+            in: "formData",
+            description: "file to upload",
+            required: true,
+            type: "file",
+          },
+        ],
+        responses: {},
+      },
+    },
+    "/indexs": {
+      get: {
+        tags: ["Index"],
+        summary: "Lấy danh sách index",
+        description: "",
+        operationId: "getIndexs",
+        consumes: ["multipart/form-data"],
+        produces: ["application/json"],
+        parameters: [],
+        responses: {},
+        security: [{}],
+      },
+    },
+  },
+
+  definitions: {
+    User: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+        },
+        email: {
+          type: "string",
+        },
+        fullname: {
+          type: "string",
+        },
+        password: {
+          type: "string",
+        },
+      },
+    },
+    Index: {
+      type: "object",
+      properties: {
+        userId: {
+          type: "string",
+        },
+        nameIndex: {
+          type: "string",
+        },
+      },
+      xml: {
+        name: "User",
+      },
+    },
+  },
+};
+
 function HomePage(props) {
+  console.log(token);
   return (
     <>
-      <h1>Thống kê số liệu</h1>
-      <div style={{ width: "48%" }}>
-        <Line options={options} data={data} />
+      <h1>Danh sách API</h1>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          overflowY: "scroll",
+          paddingBottom: "300px",
+        }}
+      >
+        {/* <Line options={options} data={data} />
 
-        <Bar options={options2} data={data2} />
+        <Bar options={options2} data={data2} /> */}
+
+        <SwaggerUI
+          spec={swaggerConfig}
+          requestInterceptor={(req) => {
+            req.headers.Authorization = `Bearer ${token}`;
+            return req;
+          }}
+        />
       </div>
     </>
   );
