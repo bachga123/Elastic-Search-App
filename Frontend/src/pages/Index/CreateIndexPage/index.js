@@ -7,14 +7,14 @@ import axios from "../../../helper/axios";
 import FileItem from "./component/FileItem";
 import "./style.css";
 import { CDBBreadcrumb } from "cdbreact";
-import { Spinner } from "react-bootstrap";
-import AlertCT from "../../../components/AlertCT";
 
 const CreateIndexPage = (props) => {
   const navigate = useNavigate();
   const [fileData, setFileData] = useState("");
   const [indexName, setIndexName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [keyData,setKeyData]=useState("");
+  const [keyUnique,setKeyUnique]=useState("");
   /* useEffect(() => {
         async function getIndex() {
           let response = await axios.get('/indexs');
@@ -23,17 +23,24 @@ const CreateIndexPage = (props) => {
       }, []) */
   const handleUploadFile = (e) => {
     setFileData(e.target.files[0]);
+    console.log(e.target.files)
+    const reader=new FileReader();
+    reader.readAsText(e.target.files[0],"UTF-8");
+    
+    reader.onload=()=>{
+      setKeyData(JSON.parse(reader.result))
+    }
   };
   const handleCreateIndex = (e) => {
     setIsLoading(true);
-    if (indexName === "" || fileData === "") {
+    if (indexName === "" || fileData === ""||keyUnique==="") {
       e.preventDefault();
     } else {
       async function createIndex() {
         const form = new FormData();
         form.append("indexname", indexName);
         form.append("dataindex", fileData);
-        console.log(fileData);
+        form.append("key", keyUnique);
         try {
           let response = await axios.post("/api/index", form);
           if (response.status === 201) {
@@ -84,7 +91,21 @@ const CreateIndexPage = (props) => {
         />
 
         <FileItem name={fileData.name} />
-
+        <Form.Group controlId="formBasicSelect" style={{marginTop:"240px",padding:"0 70px"}}>
+        <Form.Label>Chọn cột dữ liệu unique</Form.Label>
+        <Form.Control
+          as="select"
+          disabled={fileData===""?true:false}
+          onChange={e => {
+            setKeyUnique(e.target.value);
+          }}
+        >
+          <option value="" defaultValue="">Vui lòng chọn key</option> 
+          {keyData!==""?Object.keys(keyData[0]).map(key=>(
+           <option value={key}>{key}</option> 
+          )):null}
+        </Form.Control>
+      </Form.Group>
         <Button
           onClick={handleCreateIndex}
           className="bt-submit"

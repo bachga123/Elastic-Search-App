@@ -41,7 +41,7 @@ const EditIndexPage = (props) => {
   async function SearchRecord() {
     let response;
     if (searchby !== "") {
-      response = await axios.post(`/api/searchs/${indexId}`, {
+      response = await axios.post(`/api/searchs/${indexId}`,{
         type: "multi-matching",
         operator: "or",
         size: size,
@@ -55,7 +55,7 @@ const EditIndexPage = (props) => {
         handleDataTable(response.data.hits.hits);
       }
     } else {
-      response = await axios.post(`/api/searchs/${indexId}`, {
+      response = await axios.post(`/api/searchs/${indexId}`,{
         input: textSearchRecord,
       });
       console.log(response);
@@ -328,14 +328,14 @@ const EditIndexPage = (props) => {
                     >
                       Tìm bản ghi
                     </Button>
-                    {/* 
+                  
                     <Button
                       className="reload_button"
                       onClick={handleReloadRecord}
                       style={{ margin: "0 4px" }}
                     >
                       Tải lại trang
-                    </Button> */}
+                    </Button> 
 
                     {/* Bỏ */}
                     {/* <Button onClick={handleAddSearchField}>+</Button> */}

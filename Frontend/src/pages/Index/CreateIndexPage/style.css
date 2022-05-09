@@ -56,10 +56,10 @@
     border: 2px dashed #ccc;
     cursor: pointer;
     width: 350px;
-    height: 180px;
+    height: 120px;
     margin: 0;
     position: absolute;
-    top: 45%;
+    top: 40%;
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
