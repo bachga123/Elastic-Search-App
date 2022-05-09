@@ -1,107 +1,7 @@
 import React from "react";
-import AlertCT from "../../components/AlertCT";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  PointElement,
-  LineElement,
-} from "chart.js";
-import { Bar, Line } from "react-chartjs-2";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 const token = localStorage.getItem("token");
-
-ChartJS.register(
-  LinearScale,
-  CategoryScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Legend,
-  Tooltip
-);
-
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top",
-    },
-    title: {
-      display: true,
-      text: "Số lượng index tạo trong tháng",
-    },
-  },
-};
-
-const options2 = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top",
-    },
-    title: {
-      display: true,
-      text: "Kích thước index",
-    },
-  },
-};
-
-const labels = [
-  "Tháng 1",
-  "Tháng 2",
-  "Tháng 3",
-  "Tháng 4",
-  "Tháng 5",
-  "Tháng 6",
-  "Tháng 7",
-  "Tháng 8",
-  "Tháng 9",
-  "Tháng 10",
-  "Tháng 11",
-  "Tháng 12",
-];
-
-const labels2 = [
-  "event 1",
-  "event 2",
-  "event 3",
-  "event 4",
-  "event 5",
-  "event 6",
-  "event 7",
-  "event 8",
-  "event 9",
-  "event 10",
-  "event 11",
-  "event 12",
-];
-const data = {
-  labels,
-  datasets: [
-    {
-      label: "Số lượng index đã tạo",
-      data: [10, 21, 33, 14, 45, 26, 17, 58, 29, 11, 21, 52],
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-  ],
-};
-
-const data2 = {
-  labels,
-  datasets: [
-    {
-      label: "Kích thước index",
-      data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      backgroundColor: "rgba(44, 121, 11, 0.5)",
-    },
-  ],
-};
 
 const swaggerConfig = {
   swagger: "2.0",
@@ -132,6 +32,13 @@ const swaggerConfig = {
             required: true,
             type: "file",
           },
+          {
+            name: "unique",
+            in: "formData",
+            description: "Cột dữ liệu unique",
+            required: true,
+            type: "string",
+          },
         ],
         responses: {},
       },
@@ -149,38 +56,75 @@ const swaggerConfig = {
         security: [{}],
       },
     },
-  },
-
-  definitions: {
-    User: {
-      type: "object",
-      properties: {
-        id: {
-          type: "string",
-        },
-        email: {
-          type: "string",
-        },
-        fullname: {
-          type: "string",
-        },
-        password: {
-          type: "string",
-        },
+    "/datas/{index}": {
+      get: {
+        tags: ["Index"],
+        summary: "Danh sách record trong Index",
+        description: "",
+        operationId: "getRecords",
+        consumes: ["multipart/form-data"],
+        produces: ["application/json"],
+        parameters: [
+          {
+            name: "indexname",
+            in: "path",
+            description: "Tên index",
+            required: true,
+            type: "string",
+          },
+        ],
+        responses: {},
+        security: [{}],
       },
     },
-    Index: {
-      type: "object",
-      properties: {
-        userId: {
-          type: "string",
-        },
-        nameIndex: {
-          type: "string",
-        },
+
+    "/{index}/{id}": {
+      delete: {
+        tags: ["Index"],
+        summary: "Xóa record trong index",
+        description: "",
+        operationId: "deleteRecord",
+        consumes: ["multipart/form-data"],
+        produces: ["application/json"],
+        parameters: [
+          {
+            name: "indexname",
+            in: "path",
+            description: "Tên index",
+            required: true,
+            type: "string",
+          },
+          {
+            name: "recordID",
+            in: "path",
+            description: "Tên index",
+            required: true,
+            type: "string",
+          },
+        ],
+        responses: {},
+        security: [{}],
       },
-      xml: {
-        name: "User",
+    },
+    "/{index}": {
+      delete: {
+        tags: ["Index"],
+        summary: "Xóa index",
+        description: "",
+        operationId: "deleteIndex",
+        consumes: ["multipart/form-data"],
+        produces: ["application/json"],
+        parameters: [
+          {
+            name: "indexname",
+            in: "path",
+            description: "Tên index",
+            required: true,
+            type: "string",
+          },
+        ],
+        responses: {},
+        security: [{}],
       },
     },
   },
@@ -199,10 +143,6 @@ function HomePage(props) {
           paddingBottom: "300px",
         }}
       >
-        {/* <Line options={options} data={data} />
-
-        <Bar options={options2} data={data2} /> */}
-
         <SwaggerUI
           spec={swaggerConfig}
           requestInterceptor={(req) => {
