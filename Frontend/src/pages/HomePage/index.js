@@ -110,6 +110,34 @@ const swaggerConfig = {
         security: [{}],
       },
     },
+    "/searchadvanced/{index}":{
+      post: {
+        tags: ["Index"],
+        summary: "Tìm kiếm record trong Index",
+        description: "",
+        operationId: "searchAdvancedRecord",
+        consumes: ["application/json"],
+        produces: ["application/json"],
+        parameters: [
+          {
+            name: "index",
+            in: "path",
+            description: "Tên index",
+            required: true,
+            type: "string",
+          },
+          {
+            name: "query",
+            in: "body",
+            description: "Từ khoá tìm kiếm",
+            required: true,
+            type: "string",
+          },
+        ],
+        responses: {},
+        security: [{}],
+      },
+    },
     "/datas/{index}": {
       get: {
         tags: ["Index"],
