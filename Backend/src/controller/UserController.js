@@ -130,9 +130,7 @@ class UserController {
             const sampleData = require(`../uploads/${filename}`)
             let data = ''
             Index.findOne({ userId: req.user._id,nameIndex:indexname }).exec(async (error, user) => { //check key unique
-                console.log(user);
                 const {keyUnique}=user;
-                console.log(sampleData[0][keyUnique])
                 for (let idx = 0; idx < sampleData.length; idx++) {
                     const checkExist = await axios.post(
                         `${esUrl}${indexname}/_search`,
@@ -268,6 +266,7 @@ class UserController {
         }
     }
     searchAllField = async (req, res) => {
+        console.log(req)
         const query = {
             query_string: {
                 query: '*' + req.body.input + '*',
@@ -310,7 +309,7 @@ class UserController {
             const response = await axios.delete(
                 `${esUrl}${req.params.index}/_doc/${req.params.id}`
             )
-            res.status(204).json(response.data);
+            res.status(204).json(response);
         } catch (error) {
             res.json(error);
         }
@@ -323,7 +322,7 @@ class UserController {
                     query: req.body,
                 }
             )
-            res.status(204).json(response.data)
+            res.status(204).json(response)
         } catch (error) {
             res.json(error)
         }

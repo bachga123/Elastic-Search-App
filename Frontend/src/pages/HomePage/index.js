@@ -33,7 +33,7 @@ const swaggerConfig = {
             type: "file",
           },
           {
-            name: "unique",
+            name: "key",
             in: "formData",
             description: "Cột dữ liệu unique",
             required: true,
@@ -42,7 +42,33 @@ const swaggerConfig = {
         ],
         responses: {},
       },
+      put: {
+        tags: ["Index"],
+        summary: "Update data index",
+        description: "",
+        operationId: "updateindex",
+        consumes: ["multipart/form-data"],
+        produces: ["application/json"],
+        parameters: [
+          {
+            name: "indexname",
+            in: "formData",
+            description: "Tên index",
+            required: true,
+            type: "string",
+          },
+          {
+            name: "dataindex",
+            in: "formData",
+            description: "file to upload",
+            required: true,
+            type: "file",
+          }
+        ],
+        responses: {},
+      },
     },
+    
     "/indexs": {
       get: {
         tags: ["Index"],
@@ -52,6 +78,34 @@ const swaggerConfig = {
         consumes: ["multipart/form-data"],
         produces: ["application/json"],
         parameters: [],
+        responses: {},
+        security: [{}],
+      },
+    },
+    "/searchs/{index}":{
+      post: {
+        tags: ["Index"],
+        summary: "Tìm kiếm record trong Index",
+        description: "",
+        operationId: "searchRecord",
+        consumes: ["application/json"],
+        produces: ["application/json"],
+        parameters: [
+          {
+            name: "index",
+            in: "path",
+            description: "Tên index",
+            required: true,
+            type: "string",
+          },
+          {
+            name: "input",
+            in: "body",
+            description: "Từ khoá tìm kiếm",
+            required: true,
+            type: "string",
+          },
+        ],
         responses: {},
         security: [{}],
       },
@@ -66,7 +120,7 @@ const swaggerConfig = {
         produces: ["application/json"],
         parameters: [
           {
-            name: "indexname",
+            name: "index",
             in: "path",
             description: "Tên index",
             required: true,
@@ -88,14 +142,14 @@ const swaggerConfig = {
         produces: ["application/json"],
         parameters: [
           {
-            name: "indexname",
+            name: "index",
             in: "path",
             description: "Tên index",
             required: true,
             type: "string",
           },
           {
-            name: "recordID",
+            name: "id",
             in: "path",
             description: "Tên index",
             required: true,
@@ -116,7 +170,7 @@ const swaggerConfig = {
         produces: ["application/json"],
         parameters: [
           {
-            name: "indexname",
+            name: "index",
             in: "path",
             description: "Tên index",
             required: true,
