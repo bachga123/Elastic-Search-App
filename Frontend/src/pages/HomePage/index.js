@@ -7,7 +7,7 @@ const swaggerConfig = {
   swagger: "2.0",
   host: "localhost:3000/",
   basePath: "api",
-  schemes: ["https", "http"],
+  schemes: ["http"],
   paths: {
     "/index": {
       post: {

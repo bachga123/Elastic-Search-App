@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../../helper/axios";
 import "./style.css";
-import { Button, Form, Modal } from "react-bootstrap";
-import { Table } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import {
-  CDBBtn,
-  CDBLink,
-  CDBNavLink,
   CDBTable,
   CDBTableBody,
   CDBTableHeader,
@@ -17,17 +13,14 @@ import { CDBBreadcrumb } from "cdbreact";
 import "./style.css";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteIndex, getIndex } from "../../../action/user";
-import FormFileInput from "react-bootstrap/esm/FormFileInput";
 
 const IndexPage = (props) => {
   const navigate = useNavigate();
-  const [indexs, setIndexs] = useState([]);
-  const [indexUpdate, setIndexUpdate] = useState("");
+
   const [show, setShow] = useState(false);
   const [fileData, setFileData] = useState("");
   const [indexName, setIndexName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [nameDeleteIndex, setNameDeleteIndex] = useState("");
   const auth = useSelector((state) => state.auth);
   const user = useSelector((state) => state.user);
   const token = localStorage.getItem("token");
@@ -82,7 +75,6 @@ const IndexPage = (props) => {
     setIndexName(index);
     console.log(index)
   };
-  const showModal = () => {};
   const handleClose = () => {
     setShow(false);
   };
@@ -125,7 +117,7 @@ const IndexPage = (props) => {
                   color="secondary"
                   className=" btn-create-index"
                   href="/create-index"
-                  style={{ height: "35px", boxSizing: "content-box" }}
+                  style={{ height: "35px", boxSizing: "content-box", margin:"10px 0",backgroundColor:"black"}}
                 >
                   Tạo index
                 </a>

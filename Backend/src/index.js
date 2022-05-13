@@ -5,7 +5,7 @@ var cors = require('cors')
 require('dotenv').config()
 const methodOverride = require('method-override')
 const cookieParser = require('cookie-parser')
-const db = require('./config/connectdb')
+const db = require('./config/ConnectMongo')
 const route = require('./routes')
 db.connect()
 app.use(express.static(__dirname));

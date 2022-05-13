@@ -33,7 +33,7 @@ const EditIndexPage = (props) => {
   const [hidden, setHidden] = useState(false);
   const [searchField, setSearchField] = useState([]);
   async function getData() {
-    let response = await axios.post(`/api/datas/${indexId}`, { size: size });
+    let response = await axios.getData(`/api/datas/${indexId}`);
     setData(response.data.hits);
     setScrollId(response.data._scroll_id);
     console.log(response);
@@ -104,6 +104,7 @@ const EditIndexPage = (props) => {
   async function getDataTable() {
     let response = await axios.get(`/api/datas/${indexId}`);
     const data = response.data.hits;
+    setData(data)
     handleDataTable(data.hits);
   }
   const handleDataTable = (hits) => {
@@ -155,7 +156,7 @@ const EditIndexPage = (props) => {
       SearchRecord();
     }
     getDataTable();
-  }, [size]);
+  }, []);
   const handleReloadRecord = () => {
     getData();
     getDataTable();

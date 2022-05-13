@@ -4,7 +4,6 @@ const { requireSignin } = require('../middleware')
 const router = express.Router()
 const path = require('path')
 const shortid = require('shortid')
-const { validateSigninRequest, isRequestValidated } = require('../validator/auth')
 var multer = require('multer')
 const storage = multer.diskStorage({
     destination(req, file, cb) {
@@ -15,9 +14,7 @@ const storage = multer.diskStorage({
     },
 })
 const upload = multer({ storage })
-/* router.post(
-    '/create-index',requireSignin,UserController.createIndex
-) */
+
 // tạo index và úp data
 router.post(
     `/index`,requireSignin,upload.single('dataindex'),UserController.createIndexAndUpData
@@ -30,13 +27,12 @@ router.put(
 router.get(
     `/datas/:index`,UserController.searchDataIndex
 )
-/* router.post(
-    `/search/:index`,UserController.searchAllField
-) */
+
 // search kết hợp với các phép toán
 router.post(
     `/searchadvanced/:index`,UserController.searchAdvanced
 )
+
 // search không cần nhập field
 router.post(
     `/searchs/:index`,UserController.searchAllField

@@ -18,8 +18,4 @@ const userSchema = new mongoose.Schema(
     { timestamps: true }
 )
 
-/* userSchema.virtual('password')
-    .set(function(password){
-        this.hashPassword=bcrypt.hashSync(password,10)
-    }) */
 module.exports = mongoose.model('Index', userSchema)

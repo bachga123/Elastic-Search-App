@@ -1,82 +1,16 @@
 var cors = require('cors')
 require('dotenv').config()
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const axios = require('axios')
 const esUrl = `https://${process.env.USER_NAME}:${process.env.PASSWORD}@${process.env.ELASTIC_IP}:9200/`
 const shortid = require('shortid')
-const client = require('../config/connect')
+const client = require('../config/ConnectElastic')
 const Index = require('../model/Index')
 const User=require('../model/User')
 var fs = require('fs')
 const e = require('method-override')
 const { CreateIndexJson } = require('../util/indexToJson')
 class UserController {
-    createIndex = async (req, res) => {
-        try {
-            const checkIndexExist = () =>
-                new Promise((resolve) => {
-                    axios
-                        .get(`${esUrl}${req.body.index}`)
-                        .then((_) => {
-                            resolve(true)
-                        })
-                        .catch(() => {
-                            resolve(false)
-                        })
-                })
-
-            const ifIndexExist = await checkIndexExist()
-            if (!ifIndexExist) {
-                const esResponse = await axios.put(
-                    `${esUrl}${req.body.index}`,
-                    {
-                        mappings: {
-                            properties: {
-                                name: {
-                                    type: 'text',
-                                },
-                                email: {
-                                    type: 'text',
-                                    fields: {
-                                        raw: {
-                                            type: 'keyword',
-                                        },
-                                    },
-                                },
-                                country: {
-                                    type: 'text',
-                                },
-                                age: {
-                                    type: 'integer',
-                                },
-                                company: {
-                                    type: 'text',
-                                },
-                                jobRole: {
-                                    type: 'text',
-                                },
-                                description: {
-                                    type: 'text',
-                                },
-                                createdAt: {
-                                    type: 'date',
-                                    fields: {
-                                        raw: {
-                                            type: 'keyword',
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    }
-                )
-                res.json(esResponse.data)
-            } else {
-                res.json('Index exist already')
-            }
-        } catch (error) {
-            res.status(500).json(error)
-        }
-    }
     createIndexAndUpData = async (req, res) => {
         try {
             const { filename } = req.file
@@ -101,6 +35,7 @@ class UserController {
                     JSON.stringify(sampleData[idx]).replace('\n', '') +
                     '\n'
             }
+            
             const insert = await client.bulk({ body: data })
             const response = await axios.put(`${esUrl}_settings`, {
                 index: {
@@ -121,6 +56,24 @@ class UserController {
         } catch (error) {
             console.log(error)
             res.status(500).json(error)
+        }
+    }
+    searchDataIndex=async (req,res)=>{
+        try {
+            let response = await axios.post(
+                `${esUrl}${req.params.index}/_search?scroll=10m`,
+                {
+                    size: 10000,
+                    track_total_hits: true,
+                    query: {
+                        match_all: {},
+                    },
+                }
+            )
+            
+            res.status(200).json(response.data)
+        } catch (error) {
+            res.json(error)
         }
     }
     updateData = async (req, res) => {
@@ -145,7 +98,6 @@ class UserController {
                             },
                         }
                     )
-                    console.log(checkExist.data)
                     if (checkExist.data.hits.total.value === 0) { // nếu tên người dùng chưa có thì sẽ insert
                         data =
                             data +
@@ -167,102 +119,7 @@ class UserController {
             })
             
         } catch (error) {
-            console.log(error)
             res.status(500).json(error)
-        }
-    }
-    searchDataIndex = async (req, res) => {
-        try {
-            let response,
-                match = {},
-                query = [],
-                bool = {},size=10000
-            const { type, id, operator } = req.body
-            delete match.type
-            switch (type) {
-                case 'sorting':
-                    response = await axios.post(
-                        `${esUrl}${req.params.index}/_search`,
-                        {
-                            sort: {
-                                createdAt: 'desc',
-                            },
-                        }
-                    )
-                    break
-
-                case 'matching':
-                    Object.keys(req.body).map((key, index) => {
-                        Object.assign(match, {
-                            match: { [key]: req.body[key] },
-                        })
-                    })
-                    response = await axios.post(
-                        `${esUrl}${req.params.index}/_search`,
-                        {
-                            query: match,
-                        }
-                    )
-                    break
-
-                case 'multi-matching':
-                    Object.keys(req.body).map((key, index) => {
-                        Object.assign(match, {
-                            match: { [key]: req.body[key] },
-                        })
-                        query.push({ match: { [key]: req.body[key] } })
-                    })
-                    query = query.slice(3)
-                    if (operator === 'and') {
-                        Object.assign(bool, { must: query })
-                    } else {
-                        Object.assign(bool, { should: query })
-                    }
-                    response = await axios.post(
-                        `${esUrl}${req.params.index}/_search?scroll=10m`,
-                        {
-                            size: parseInt(size),
-                            track_total_hits: true,
-                            query: {
-                                bool: bool,
-                            },
-                        }
-                    )
-                    break;
-                default:
-                    response = await axios.post(
-                        `${esUrl}${req.params.index}/_search?scroll=10m`,
-                        {
-                            size: parseInt(size),
-                            track_total_hits: true,
-                            query: {
-                                match_all: {},
-                            },
-                        }
-                    )
-                    break
-            }
-
-            res.status(200).json(response.data)
-            /* res.json(response.data.hits.hits);  */
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    searchMultiField = async (req, res) => {
-        try {
-            let response = await axios.post(
-                `${esUrl}${req.params.index}/_search?scroll=1h`,
-                {
-                    size: 2,
-                    query: {
-                        multi_match: req.body,
-                    },
-                }
-            )
-            res.status(200).json(response.data)
-        } catch (error) {
-            res.json(error)
         }
     }
     searchAllField = async (req, res) => {
@@ -388,7 +245,6 @@ function pagination(items, page = 1, perPage = 8) {
         },
     }
 }
-
 function converData(data) {
     return JSON.stringify(data).replace('\n', '')
 }

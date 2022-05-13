@@ -38,8 +38,4 @@ userSchema.methods = {
     },
   };
 
-/* userSchema.virtual('password')
-    .set(function(password){
-        this.hashPassword=bcrypt.hashSync(password,10)
-    }) */
 module.exports = mongoose.model('User', userSchema)
