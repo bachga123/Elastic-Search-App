@@ -21,3 +21,12 @@
 .sidebar-nav{
     background-color: #4897CF;
 }
+
+.reset-link {
+    text-decoration: none;
+    color: white;
+}
+
+.reset-link:hover {
+    color: rgb(175, 174, 174);
+}

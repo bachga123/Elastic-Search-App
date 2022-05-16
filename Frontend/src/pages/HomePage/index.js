@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteIndex, getIndex } from "../../action/user";
+import { Link, useNavigate } from "react-router-dom";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 const token = localStorage.getItem("token");
@@ -63,12 +66,12 @@ const swaggerConfig = {
             description: "file to upload",
             required: true,
             type: "file",
-          }
+          },
         ],
         responses: {},
       },
     },
-    
+
     "/indexs": {
       get: {
         tags: ["Index"],
@@ -82,7 +85,7 @@ const swaggerConfig = {
         security: [{}],
       },
     },
-    "/searchs/{index}":{
+    "/searchs/{index}": {
       post: {
         tags: ["Index"],
         summary: "Tìm kiếm record trong Index",
@@ -110,7 +113,7 @@ const swaggerConfig = {
         security: [{}],
       },
     },
-    "/searchadvanced/{index}":{
+    "/searchadvanced/{index}": {
       post: {
         tags: ["Index"],
         summary: "Tìm kiếm record trong Index",
@@ -213,6 +216,20 @@ const swaggerConfig = {
 };
 
 function HomePage(props) {
+  const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.user);
+  const token = localStorage.getItem("token");
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getIndex());
+  }, [auth.authenticate]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/sign-in");
+    }
+  }, [dispatch, auth.authenticate]);
   console.log(token);
   return (
     <>

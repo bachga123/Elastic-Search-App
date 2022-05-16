@@ -34,7 +34,14 @@ function SignIn(props) {
   }, [dispatch, auth.authenticate]);
 
   return (
-    <>{auth.authenticate===true?<AlertCT variant='success' titleAlert="Đăng nhập thành công" contentAlert="Bạn đã đăng nhập thành công. Vui lòng chờ trong giây lát." />:null}
+    <>
+      {auth.authenticate === true ? (
+        <AlertCT
+          typeAlert="success"
+          titleAlert="Đăng nhập thành công"
+          contentAlert="Bạn đã đăng nhập thành công. Vui lòng chờ trong giây lát."
+        />
+      ) : null}
       <div className="form-auth">
         <h1 className="form-title">Đăng nhập</h1>
         <Form className="my-4">

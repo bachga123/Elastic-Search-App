@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "../../../helper/axios";
 import "./style.css";
 import { Button, Modal } from "react-bootstrap";
-import {
-  CDBTable,
-  CDBTableBody,
-  CDBTableHeader,
-} from "cdbreact";
+import { CDBTable, CDBTableBody, CDBTableHeader } from "cdbreact";
 import FileItem from "../CreateIndexPage/component/FileItem";
 import { Link, useNavigate } from "react-router-dom";
 import { CDBBreadcrumb } from "cdbreact";
@@ -27,7 +23,7 @@ const IndexPage = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getIndex());
-  }, [auth.authenticate,]);
+  }, [auth.authenticate]);
 
   useEffect(() => {
     if (!token) {
@@ -57,11 +53,11 @@ const IndexPage = (props) => {
         form.append("dataindex", fileData);
         try {
           let response = await axios.put("/api/index", form);
-          if(response.status===200){
-            dispatch(getIndex())
+          if (response.status === 200) {
+            dispatch(getIndex());
           }
           setIsLoading(false);
-          setShow(false)
+          setShow(false);
         } catch (err) {
           console.log(err);
         }
@@ -73,38 +69,24 @@ const IndexPage = (props) => {
   const handleShow = (index) => {
     setShow(true);
     setIndexName(index);
-    console.log(index)
+    console.log(index);
   };
   const handleClose = () => {
     setShow(false);
   };
   return (
     <>
-      <CDBBreadcrumb>
+      {/* <CDBBreadcrumb>
         <a className="breadcrumb-item" href="/">
           Trang chủ
         </a>
         <a className="breadcrumb-item active" href="/indexs">
           Danh sách Index
         </a>
-      </CDBBreadcrumb>
-      <div
-        style={{
-          flex: "1 1 auto",
-          display: "flex",
-          flexFlow: "column",
-          height: "100vh",
-          overflowY: "hidden",
-        }}
-      >
+      </CDBBreadcrumb> */}
+      <div>
         <div style={{ height: "100%" }}>
-          <div
-            style={{
-              padding: "20px 5%",
-              height: "calc(100% - 64px)",
-              overflowY: "scroll",
-            }}
-          >
+          <div className="container">
             <div
               style={{
                 display: "grid",
@@ -117,7 +99,12 @@ const IndexPage = (props) => {
                   color="secondary"
                   className=" btn-create-index"
                   href="/create-index"
-                  style={{ height: "35px", boxSizing: "content-box", margin:"10px 0",backgroundColor:"black"}}
+                  style={{
+                    height: "35px",
+                    boxSizing: "content-box",
+                    margin: "10px 0",
+                    backgroundColor: "black",
+                  }}
                 >
                   Tạo index
                 </a>
@@ -153,8 +140,8 @@ const IndexPage = (props) => {
                           <td>
                             <Button
                               className="btn-primary"
-                              onClick={()=>handleShow(index)}
-                              style={{margin:"0 5px"}}
+                              onClick={() => handleShow(index)}
+                              style={{ margin: "0 5px" }}
                             >
                               Thêm data
                             </Button>
@@ -200,7 +187,7 @@ const IndexPage = (props) => {
               onChange={handleUploadFile}
               style={{ width: "80px" }}
             />
-            <FileItem name={fileData.name}/>
+            <FileItem name={fileData.name} />
           </div>
         </Modal.Body>
 
