@@ -6,3 +6,6 @@ Platform hỗ trợ ElasticSearch
 - Long: Swagger.
 - Bách: cluster elastics.
 - Trường: xử lý index key unique and update data index.
+- Công việc tuần 18/5
+- Trường deploy web lên EC2.
+- Long + Bách: làm báo cáo.
