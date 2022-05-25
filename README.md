@@ -9,3 +9,5 @@ Platform hỗ trợ ElasticSearch
 - Công việc tuần 18/5
 - Trường deploy web lên EC2.
 - Long + Bách: làm báo cáo.
+Dô review code đúng không, dô link này test nha, tuần này nhóm mình không có code thêm.
+http://3.221.75.143/
